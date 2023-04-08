@@ -1,0 +1,34 @@
+@model Cinema.Models.Comprende
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Comprende</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdPosto" />
+            <input type="hidden" asp-for="IdSala" />
+            <input type="hidden" asp-for="IdPrenotazione" />
+            <input type="hidden" asp-for="DataS" />
+            <input type="hidden" asp-for="OraS" />
+            <input type="hidden" asp-for="IdUtente" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
