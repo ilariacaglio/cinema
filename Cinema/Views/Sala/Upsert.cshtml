@@ -1,0 +1,51 @@
+﻿@model Cinema.Models.Sala
+@{
+    ViewData["Title"] = "Upsert";
+}
+<form method="post" asp-action="Upsert" enctype="multipart/form-data">
+    <input asp-for="Id" hidden />
+    <div class="col-12">
+        <div class="p-3 mt-4 row">
+            <div class="col-12 pb-2">
+                <h2 class="text-primary">@(Model.Id!=0? "Modifica una":"Crea una nuova") Sala</h2>
+                <hr />
+            </div>
+            <div class="col-6">
+                <label asp-for="Nposti"></label>
+                <input type="number" asp-for="Nposti" class="form-control" />
+                <span asp-validation-for="Nposti" class="text-danger"></span>
+            </div>
+            <div class="col-6">
+                <label asp-for="Nfile"></label>
+                <input type="number" asp-for="Nfile" class="form-control" />
+                <span asp-validation-for="Nfile" class="text-danger"></span>
+            </div>
+            <div class="col-1 my-2">
+                <div class="form-check form-switch form-check-reverse">
+                    <label asp-for="Isense"></label>
+                    <input asp-for="Isense" class="form-check-input" type="checkbox" />
+                    <span asp-validation-for="Isense" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-12">
+                @if (Model.Id != 0)
+                {
+                    <button type="submit" asp-controller="Sala" asp-action="Upsert" class="btn btn-primary" style="width:150px">Update</button>
+                }
+                else
+                {
+                    <button type="submit" asp-controller="Sala" asp-action="Upsert" class="btn btn-primary" style="width:150px">Create</button>
+                }
+                <a asp-controller="Sala" asp-action="Index" class="btn btn-secondary" style="width:150px">
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+</form>
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

@@ -7,157 +7,111 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
+using Cinema.DataAccess.Repository;
+using Cinema.DataAccess.Repository.IRepository;
 
 namespace Cinema.Controllers
 {
     public class SalaController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public SalaController(AppDbContext context)
+        public SalaController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Sala
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-              return _context.Sale != null ? 
-                          View(await _context.Sale.ToListAsync()) :
-                          Problem("Entity set 'AppDbContext.Sale'  is null.");
+            var sale = _unitOfWork.Sala.GetAll();
+            return View(sale);
         }
 
         // GET: Sala/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
-            if (id == null || _context.Sale == null)
-            {
+            if (id == null || _unitOfWork.Sala == null)
                 return NotFound();
-            }
 
-            var sala = await _context.Sale
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var sala = _unitOfWork.Sala.GetFirstOrDefault(id);
+
             if (sala == null)
-            {
                 return NotFound();
-            }
 
             return View(sala);
         }
 
-        // GET: Sala/Create
-        public IActionResult Create()
+        //GET
+        public IActionResult Upsert(int? id)
         {
-            return View();
+            Sala s = new Sala();
+
+            if (id == null || id == 0)
+            {
+                //create sala
+                return View(s);
+            }
+            else
+            {
+                var salaInDb = _unitOfWork.Sala.GetFirstOrDefault(id);
+                if (salaInDb != null)
+                {
+                    s = salaInDb;
+                    return View(s);
+                }
+                return View(s);
+            }
         }
 
-        // POST: Sala/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nposti,Nfile,Isense")] Sala sala)
+        public IActionResult Upsert(Sala obj)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(sala);
-                await _context.SaveChangesAsync();
+                if (obj.Id == 0)
+                {
+                    _unitOfWork.Sala.Add(obj);
+                    TempData["success"] = "Sala creata con successo";
+                }
+                else //update exsisting Product
+                {
+                    _unitOfWork.Sala.Update(obj);
+                    TempData["success"] = "Sala modificata con successo";
+                }
+                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
-            return View(sala);
+            return View(obj);
         }
 
-        // GET: Sala/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            if (id == null || _context.Sale == null)
-            {
-                return NotFound();
-            }
-
-            var sala = await _context.Sale.FindAsync(id);
-            if (sala == null)
-            {
-                return NotFound();
-            }
-            return View(sala);
+            var salaList = _unitOfWork.Sala.GetAll();
+            return Json(new { data = salaList });
         }
 
-        // POST: Sala/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nposti,Nfile,Isense")] Sala sala)
+        [HttpDelete]
+        public IActionResult Delete(int? id)
         {
-            if (id != sala.Id)
+            var objFromDbFirst = _unitOfWork.Sala.GetFirstOrDefault(id);
+            if (objFromDbFirst == null)//l'oggetto con l'id specificato non è stato trovato
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error while deleting" });
             }
-
-            if (ModelState.IsValid)
+            else //l'oggetto con l'id specificato è stato trovato
             {
-                try
-                {
-                    _context.Update(sala);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SalaExists(sala.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _unitOfWork.Sala.Remove(objFromDbFirst);
+                _unitOfWork.Save();
+                return Json(new { success = true, message = "Delete Successful" });
             }
-            return View(sala);
         }
 
-        // GET: Sala/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Sale == null)
-            {
-                return NotFound();
-            }
-
-            var sala = await _context.Sale
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (sala == null)
-            {
-                return NotFound();
-            }
-
-            return View(sala);
-        }
-
-        // POST: Sala/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Sale == null)
-            {
-                return Problem("Entity set 'AppDbContext.Sale'  is null.");
-            }
-            var sala = await _context.Sale.FindAsync(id);
-            if (sala != null)
-            {
-                _context.Sale.Remove(sala);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool SalaExists(int id)
-        {
-          return (_context.Sale?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        #endregion
     }
 }

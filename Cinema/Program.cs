@@ -1,4 +1,6 @@
 ﻿using Cinema.DataAccess;
+using Cinema.DataAccess.Repository;
+using Cinema.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(
     .EnableSensitiveDataLogging()
     .EnableDetailedErrors()
 );
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
