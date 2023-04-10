@@ -37,19 +37,23 @@
     <Folder Include="wwwroot\images\" />
     <Folder Include="Areas\" />
     <Folder Include="Areas\Admin\" />
-    <Folder Include="Areas\User\" />
     <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Views\" />
+    <Folder Include="Areas\Admin\Views\Sala\" />
+    <Folder Include="Areas\User\" />
     <Folder Include="Areas\User\Controllers\" />
     <Folder Include="Areas\User\Views\" />
+    <Folder Include="Areas\User\Views\Home\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Areas\" />
     <None Remove="Areas\Admin\" />
-    <None Remove="Areas\User\" />
     <None Remove="Areas\Admin\Controllers\" />
     <None Remove="Areas\Admin\Views\" />
+    <None Remove="Areas\Admin\Views\Sala\" />
+    <None Remove="Areas\User\" />
     <None Remove="Areas\User\Controllers\" />
     <None Remove="Areas\User\Views\" />
+    <None Remove="Areas\User\Views\Home\" />
   </ItemGroup>
 </Project>

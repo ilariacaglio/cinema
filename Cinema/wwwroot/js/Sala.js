@@ -10,7 +10,7 @@ function loadDataTable() {
             url: "https://cdn.datatables.net/plug-ins/1.13.2/i18n/it-IT.json"
         },
         ajax: {
-            url: "/Sala/GetAll"
+            url: "/Admin/Sala/GetAll"
         },
         columns: [
             { data: "id", width: "20%" },
@@ -33,9 +33,9 @@ function loadDataTable() {
                 render: function (data) {
                     return (`
                         <div class="w-100 text-center">
-                                <a href="/Sala/Upsert?id=${data}" class="btn btn-primary mx-1">
+                                <a href="/Admin/Sala/Upsert?id=${data}" class="btn btn-primary mx-1">
                                     <i class="bi bi-pencil-square"></i>Edit</a>
-                                <a onClick=Delete("/Sala/Delete/${data}")  class="btn btn-danger mx-1">
+                                <a onClick=Delete("/Admin/Sala/Delete/${data}")  class="btn btn-danger mx-1">
                                     <i class="bi bi-trash-fill"></i>Delete</a>
                         </div>
                     `)

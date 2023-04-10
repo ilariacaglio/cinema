@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Cinema.Models;
 
 namespace Cinema.Controllers;
-
+[Area("User")]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;

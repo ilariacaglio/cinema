@@ -10,8 +10,9 @@ using Cinema.Models;
 using Cinema.DataAccess.Repository;
 using Cinema.DataAccess.Repository.IRepository;
 
-namespace Cinema.Controllers
+namespace Cinema.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class SalaController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
