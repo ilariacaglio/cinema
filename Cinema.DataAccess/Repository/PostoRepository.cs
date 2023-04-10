@@ -15,7 +15,13 @@ namespace Cinema.DataAccess.Repository
 
         public void Add(Posto entity)
         {
-            _db.Posti.Add(entity);
+            var sala = _db.Sale.Single(s => s.Id == entity.IdSala);
+            if (sala.Nfile >= entity.Fila && sala.Nposti >= entity.Numero)
+            {
+                if (sala.Isense && entity.Fila >= 5)
+                    entity.Costo += 2;
+                _db.Posti.Add(entity);
+            }
         }
 
         public IEnumerable<Posto> GetAll()

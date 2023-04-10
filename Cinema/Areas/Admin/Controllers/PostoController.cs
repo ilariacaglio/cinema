@@ -11,6 +11,7 @@ using Cinema.DataAccess.Repository.IRepository;
 
 namespace Cinema.Controllers
 {
+    [Area("Admin")]
     public class PostoController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -41,29 +42,82 @@ namespace Cinema.Controllers
             return View(posto);
         }
 
-       
-        //// POST: Posto/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    if (_context.Posti == null)
-        //    {
-        //        return Problem("Entity set 'AppDbContext.Posti'  is null.");
-        //    }
-        //    var posto = await _context.Posti.FindAsync(id);
-        //    if (posto != null)
-        //    {
-        //        _context.Posti.Remove(posto);
-        //    }
-            
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
 
-        //private bool PostoExists(int id)
-        //{
-        //  return (_context.Posti?.Any(e => e.Id == id)).GetValueOrDefault();
-        //}
+        //GET
+        public IActionResult Upsert(int? id, int? salaId)
+        {
+            Posto p = new Posto();
+            ViewBag.Sale = _unitOfWork.Sala.GetAll().Select(
+            s => new SelectListItem
+            {
+                Text = s.Id.ToString(),
+                Value = s.Id.ToString()
+            });
+            if (id == null || id == 0)
+            {
+                //create sala
+                return View(p);
+            }
+            else
+            {
+                var postoInDb = _unitOfWork.Posto.GetFirstOrDefault(id, salaId);
+                if (postoInDb != null)
+                {
+                    p = postoInDb;
+                    return View(p);
+                }
+                return View(p);
+            }
+        }
+
+        //UPSERT
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Upsert(Posto obj)
+        {
+            if (ModelState.IsValid)
+            {
+                if (obj.Id == 0)
+                {
+                    _unitOfWork.Posto.Add(obj);
+                    TempData["success"] = "Posto creato con successo";
+                }
+                else //update exsisting Product
+                {
+                    _unitOfWork.Posto.Update(obj);
+                    TempData["success"] = "Posto modificato con successo";
+                }
+                _unitOfWork.Save();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(obj);
+        }
+
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var postoList = _unitOfWork.Posto.GetAll();
+            return Json(new { data = postoList });
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(int? id, int? salaId)
+        {
+            var objFromDbFirst = _unitOfWork.Posto.GetFirstOrDefault(id, salaId);
+            if (objFromDbFirst == null)//l'oggetto con l'id specificato non è stato trovato
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+            else //l'oggetto con l'id specificato è stato trovato
+            {
+                _unitOfWork.Posto.Remove(objFromDbFirst);
+                _unitOfWork.Save();
+                return Json(new { success = true, message = "Delete Successful" });
+            }
+        }
+
+        #endregion
+
     }
 }

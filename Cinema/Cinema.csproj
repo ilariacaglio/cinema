@@ -44,6 +44,7 @@
     <Folder Include="Areas\User\Controllers\" />
     <Folder Include="Areas\User\Views\" />
     <Folder Include="Areas\User\Views\Home\" />
+    <Folder Include="Areas\Admin\Views\Posto\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Areas\" />
@@ -55,5 +56,6 @@
     <None Remove="Areas\User\Controllers\" />
     <None Remove="Areas\User\Views\" />
     <None Remove="Areas\User\Views\Home\" />
+    <None Remove="Areas\Admin\Views\Posto\" />
   </ItemGroup>
 </Project>

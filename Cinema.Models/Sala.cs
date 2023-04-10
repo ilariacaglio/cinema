@@ -11,10 +11,12 @@ public partial class Sala
 
     [Display(Name = "Numero Posti")]
     [Required]
+    [Range(1, 1000)]
     public int Nposti { get; set; }
 
     [Display(Name = "Numero File")]
     [Required]
+    [Range(1, 1000)]
     public int Nfile { get; set; }
 
     [Required]
