@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
+using Cinema.Models.VM;
 using Cinema.DataAccess.Repository;
 using Cinema.DataAccess.Repository.IRepository;
 
@@ -46,7 +47,8 @@ namespace Cinema.Areas.Admin.Controllers
         //GET
         public IActionResult Upsert(int? id)
         {
-            Sala s = new Sala();
+            SalaVM s = new SalaVM();
+            s.sala = new Sala();
 
             if (id == null || id == 0)
             {
@@ -58,7 +60,7 @@ namespace Cinema.Areas.Admin.Controllers
                 var salaInDb = _unitOfWork.Sala.GetFirstOrDefault(id);
                 if (salaInDb != null)
                 {
-                    s = salaInDb;
+                    s.sala = salaInDb;
                     return View(s);
                 }
                 return View(s);
@@ -68,21 +70,47 @@ namespace Cinema.Areas.Admin.Controllers
         //UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(Sala obj)
+        public IActionResult Upsert(SalaVM obj)
         {
             if (ModelState.IsValid)
             {
-                if (obj.Id == 0)
+                if (obj.sala.Id == 0)
                 {
-                    _unitOfWork.Sala.Add(obj);
+                    _unitOfWork.Sala.Add(obj.sala);
                     TempData["success"] = "Sala creata con successo";
                 }
-                else //update exsisting Product
+                else
                 {
-                    _unitOfWork.Sala.Update(obj);
+                    _unitOfWork.Sala.Update(obj.sala);
                     TempData["success"] = "Sala modificata con successo";
                 }
                 _unitOfWork.Save();
+                if (obj.creaPosti)
+                {
+                    //creazione in automatico dei posti
+                    //se il resto è zero okay altrimenti aggiungi un posto
+                    int postiPerFila = 0;
+                    if (obj.sala.Nposti % obj.sala.Nfile == 0)
+                        postiPerFila = obj.sala.Nposti / obj.sala.Nfile;
+                    else
+                        postiPerFila = obj.sala.Nposti / obj.sala.Nfile + 1;
+
+                    for (int i = 1; i <= obj.sala.Nfile; i++)
+                    {
+                        for (int j = 1; j <= postiPerFila; j++)
+                        {
+                            int n = (i - 1) * postiPerFila + j;
+                            _unitOfWork.Posto.Add(new Posto
+                            {
+                                IdSala = obj.sala.Id,
+                                Fila = i,
+                                Costo = obj.costo,
+                                Numero = n
+                            });
+                            _unitOfWork.Save();
+                        }
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(obj);

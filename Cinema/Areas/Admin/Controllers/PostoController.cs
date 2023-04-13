@@ -29,12 +29,12 @@ namespace Cinema.Controllers
         }
 
         // GET: Posto/Details/5
-        public IActionResult Details(int? id, int? idSala)
+        public IActionResult Details(int? id)
         {
             if (id == null || _unitOfWork.Posto == null)
                 return NotFound();
 
-            var posto = _unitOfWork.Posto.GetFirstOrDefault(id, idSala);
+            var posto = _unitOfWork.Posto.GetFirstOrDefault(id);
 
             if (posto == null)
                 return NotFound();
@@ -44,15 +44,15 @@ namespace Cinema.Controllers
 
 
         //GET
-        public IActionResult Upsert(int? id, int? salaId)
+        public IActionResult Upsert(int? id)
         {
             Posto p = new Posto();
             ViewBag.Sale = _unitOfWork.Sala.GetAll().Select(
-            s => new SelectListItem
-            {
-                Text = s.Id.ToString(),
-                Value = s.Id.ToString()
-            });
+                s => new SelectListItem
+                {
+                    Text = s.Id.ToString(),
+                    Value = s.Id.ToString()
+                });
             if (id == null || id == 0)
             {
                 //create sala
@@ -60,7 +60,7 @@ namespace Cinema.Controllers
             }
             else
             {
-                var postoInDb = _unitOfWork.Posto.GetFirstOrDefault(id, salaId);
+                var postoInDb = _unitOfWork.Posto.GetFirstOrDefault(id);
                 if (postoInDb != null)
                 {
                     p = postoInDb;
@@ -102,9 +102,9 @@ namespace Cinema.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(int? id, int? salaId)
+        public IActionResult Delete(int? id)
         {
-            var objFromDbFirst = _unitOfWork.Posto.GetFirstOrDefault(id, salaId);
+            var objFromDbFirst = _unitOfWork.Posto.GetFirstOrDefault(id);
             if (objFromDbFirst == null)//l'oggetto con l'id specificato non è stato trovato
             {
                 return Json(new { success = false, message = "Error while deleting" });
@@ -116,7 +116,6 @@ namespace Cinema.Controllers
                 return Json(new { success = true, message = "Delete Successful" });
             }
         }
-
         #endregion
 
     }

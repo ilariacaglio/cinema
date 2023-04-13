@@ -1,34 +1,47 @@
-﻿@model Cinema.Models.Sala
+﻿@model Cinema.Models.VM.SalaVM
 @{
     ViewData["Title"] = "Upsert";
 }
 <form method="post" asp-area="Admin" asp-action="Upsert" enctype="multipart/form-data">
-    <input asp-for="Id" hidden />
+    <input asp-for="sala.Id" hidden />
     <div class="col-12">
         <div class="p-3 mt-4 row">
             <div class="col-12 pb-2">
-                <h2 class="text-primary">@(Model.Id!=0? "Modifica una":"Crea una nuova") Sala</h2>
+                <h2 class="text-primary">@(Model.sala.Id!=0? "Modifica una":"Crea una nuova") Sala</h2>
                 <hr />
             </div>
             <div class="col-6">
-                <label asp-for="Nposti"></label>
-                <input type="number" asp-for="Nposti" class="form-control" />
-                <span asp-validation-for="Nposti" class="text-danger"></span>
+                <label asp-for="sala.Nposti"></label>
+                <input type="number" asp-for="sala.Nposti" class="form-control" />
+                <span asp-validation-for="sala.Nposti" class="text-danger"></span>
             </div>
             <div class="col-6">
-                <label asp-for="Nfile"></label>
-                <input type="number" asp-for="Nfile" class="form-control" />
-                <span asp-validation-for="Nfile" class="text-danger"></span>
+                <label asp-for="sala.Nfile"></label>
+                <input type="number" asp-for="sala.Nfile" class="form-control" />
+                <span asp-validation-for="sala.Nfile" class="text-danger"></span>
             </div>
             <div class="col-1 my-2">
                 <div class="form-check form-switch form-check-reverse">
-                    <label asp-for="Isense"></label>
-                    <input asp-for="Isense" class="form-check-input" type="checkbox" />
-                    <span asp-validation-for="Isense" class="text-danger"></span>
+                    <label asp-for="sala.Isense"></label>
+                    <input asp-for="sala.Isense" class="form-check-input" type="checkbox" />
+                    <span asp-validation-for="sala.Isense" class="text-danger"></span>
                 </div>
             </div>
+            <br />
+            <div class="col-5 my-2">
+                <div class="form-check form-switch form-check-reverse">
+                    <label asp-for="creaPosti">Vuoi creare automaticamente i posti?</label>
+                    <input asp-for="creaPosti" class="form-check-input" type="checkbox" />
+                    <span asp-validation-for="creaPosti" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-6 my-2">
+                <label asp-for="costo"></label>
+                <input type="number" asp-for="costo" class="form-control" />
+                <span asp-validation-for="costo" class="text-danger"></span>
+            </div>
             <div class="col-12">
-                @if (Model.Id != 0)
+                @if (Model.sala.Id != 0)
                 {
                     <button type="submit" asp-controller="Sala" asp-action="Upsert" class="btn btn-primary" style="width:150px">Update</button>
                 }

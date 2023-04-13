@@ -31,17 +31,14 @@ namespace Cinema.DataAccess.Repository
 
         public Posto? GetFirstOrDefault(int? id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Posto? GetFirstOrDefault(int? id, int? salaId)
-        {
-            return _db.Posti.Single(p => p.Id == id && p.IdSala == salaId);
+            if (id is null)
+                return null;
+            return _db.Posti.Single(p => p.Id == id);
         }
 
         public void Remove(Posto entity) 
         {
-            var postoFromDb = GetFirstOrDefault(entity.Id, entity.IdSala);
+            var postoFromDb = GetFirstOrDefault(entity.Id);
             if (postoFromDb != null)
                 _db.Posti.Remove(postoFromDb);
         }
@@ -53,12 +50,13 @@ namespace Cinema.DataAccess.Repository
 
         public void Update(Posto p)
         {
-            var postoFromDb = GetFirstOrDefault(p.Id, p.IdSala);
+            var postoFromDb = GetFirstOrDefault(p.Id);
             if (postoFromDb != null)
             {
                 postoFromDb.Fila = p.Fila;
                 postoFromDb.Numero = p.Numero;
                 postoFromDb.Costo = p.Costo;
+                postoFromDb.IdSala = p.IdSala;
             }
         }
     }

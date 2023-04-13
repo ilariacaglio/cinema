@@ -10,21 +10,19 @@ function loadDataTable() {
             url: "https://cdn.datatables.net/plug-ins/1.13.2/i18n/it-IT.json"
         },
         ajax: {
-            url: "/Admin/Posto/GetAll"
+            url: "/Admin/Genere/GetAll"
         },
         columns: [
-            { data: "fila", width: "20%" },
-            { data: "numero", width: "20%" },
-            { data: "costo", width: "20%" },
-            { data: "idSala", width: "20%" },
+            { data: "id", width: "20%" },
+            { data: "nome", width: "20%" },
             {
                 data: "id",
                 render: function (data) {
                     return (`
                         <div class="w-100 text-center">
-                                <a href="/Admin/Posto/Upsert?id=${data}" class="btn btn-primary mx-1">
+                                <a href="/Admin/Genere/Upsert?id=${data}" class="btn btn-primary mx-1">
                                     <i class="bi bi-pencil-square"></i>Edit</a>
-                                <a onClick=Delete("/Admin/Posto/Delete?id=${data}") class="btn btn-danger mx-1">
+                                <a onClick=Delete("/Admin/Genere/Delete?id=${data}") class="btn btn-danger mx-1">
                                     <i class="bi bi-trash-fill"></i>Delete</a>
                         </div>
                     `)

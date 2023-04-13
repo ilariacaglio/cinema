@@ -7,157 +7,102 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
+using Cinema.DataAccess.Repository.IRepository;
 
 namespace Cinema.Controllers
 {
+    [Area("Admin")]
     public class GenereController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public GenereController(AppDbContext context)
+        public GenereController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Genere
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-              return _context.Generi != null ? 
-                          View(await _context.Generi.ToListAsync()) :
-                          Problem("Entity set 'AppDbContext.Generi'  is null.");
+            var generi = _unitOfWork.Posto.GetAll();
+            return View(generi);
         }
 
         // GET: Genere/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
-            if (id == null || _context.Generi == null)
-            {
+            if (id == null || _unitOfWork.Genere == null)
                 return NotFound();
-            }
 
-            var genere = await _context.Generi
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var genere = _unitOfWork.Genere.GetFirstOrDefault(id);
             if (genere == null)
-            {
                 return NotFound();
-            }
 
             return View(genere);
         }
 
-        // GET: Genere/Create
-        public IActionResult Create()
+        //GET
+        public IActionResult Upsert(int? id)
         {
-            return View();
+            Genere g = new Genere();
+            if (id == null || id == 0)
+                return View(g);
+            else
+            {
+                var genereInDb = _unitOfWork.Genere.GetFirstOrDefault(id);
+                if (genereInDb != null)
+                {
+                    g = genereInDb;
+                    return View(g);
+                }
+                return View(g);
+            }
         }
 
-        // POST: Genere/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome")] Genere genere)
+        public IActionResult Upsert(Genere obj)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(genere);
-                await _context.SaveChangesAsync();
+                if (obj.Id == 0)
+                {
+                    _unitOfWork.Genere.Add(obj);
+                    TempData["success"] = "Posto creato con successo";
+                }
+                else 
+                {
+                    _unitOfWork.Genere.Update(obj);
+                    TempData["success"] = "Posto modificato con successo";
+                }
+                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
-            return View(genere);
+            return View(obj);
         }
 
-        // GET: Genere/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            if (id == null || _context.Generi == null)
-            {
-                return NotFound();
-            }
-
-            var genere = await _context.Generi.FindAsync(id);
-            if (genere == null)
-            {
-                return NotFound();
-            }
-            return View(genere);
+            var genereList = _unitOfWork.Genere.GetAll();
+            return Json(new { data = genereList });
         }
 
-        // POST: Genere/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome")] Genere genere)
+        [HttpDelete]
+        public IActionResult Delete(int? id)
         {
-            if (id != genere.Id)
+            var objFromDbFirst = _unitOfWork.Genere.GetFirstOrDefault(id);
+            if (objFromDbFirst == null)//l'oggetto con l'id specificato non è stato trovato
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error while deleting" });
             }
-
-            if (ModelState.IsValid)
+            else //l'oggetto con l'id specificato è stato trovato
             {
-                try
-                {
-                    _context.Update(genere);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!GenereExists(genere.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _unitOfWork.Genere.Remove(objFromDbFirst);
+                _unitOfWork.Save();
+                return Json(new { success = true, message = "Delete Successful" });
             }
-            return View(genere);
-        }
-
-        // GET: Genere/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Generi == null)
-            {
-                return NotFound();
-            }
-
-            var genere = await _context.Generi
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (genere == null)
-            {
-                return NotFound();
-            }
-
-            return View(genere);
-        }
-
-        // POST: Genere/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Generi == null)
-            {
-                return Problem("Entity set 'AppDbContext.Generi'  is null.");
-            }
-            var genere = await _context.Generi.FindAsync(id);
-            if (genere != null)
-            {
-                _context.Generi.Remove(genere);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool GenereExists(int id)
-        {
-          return (_context.Generi?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

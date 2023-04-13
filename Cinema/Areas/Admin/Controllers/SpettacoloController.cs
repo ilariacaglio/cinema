@@ -49,7 +49,7 @@ namespace Cinema.Controllers
         // GET: Spettacolo/Create
         public IActionResult Create()
         {
-            ViewData["IdFilm"] = new SelectList(_context.Films, "Id", "Id");
+            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id");
             ViewData["IdSala"] = new SelectList(_context.Sale, "Id", "Id");
             return View();
         }
@@ -67,7 +67,7 @@ namespace Cinema.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFilm"] = new SelectList(_context.Films, "Id", "Id", spettacolo.IdFilm);
+            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", spettacolo.IdFilm);
             ViewData["IdSala"] = new SelectList(_context.Sale, "Id", "Id", spettacolo.IdSala);
             return View(spettacolo);
         }
@@ -85,7 +85,7 @@ namespace Cinema.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdFilm"] = new SelectList(_context.Films, "Id", "Id", spettacolo.IdFilm);
+            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", spettacolo.IdFilm);
             ViewData["IdSala"] = new SelectList(_context.Sale, "Id", "Id", spettacolo.IdSala);
             return View(spettacolo);
         }
@@ -122,7 +122,7 @@ namespace Cinema.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFilm"] = new SelectList(_context.Films, "Id", "Id", spettacolo.IdFilm);
+            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", spettacolo.IdFilm);
             ViewData["IdSala"] = new SelectList(_context.Sale, "Id", "Id", spettacolo.IdSala);
             return View(spettacolo);
         }

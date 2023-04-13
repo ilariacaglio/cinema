@@ -3,9 +3,9 @@ using Cinema.Models;
 
 namespace Cinema.DataAccess.Repository.IRepository
 {
-	public interface IPostoRepository : IRepository<Posto>
+	public interface IGenereRepository: IRepository<Genere>
     {
-        void Update(Posto p);
+        void Update(Genere g);
     }
 }
 

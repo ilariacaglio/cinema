@@ -14,7 +14,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Comprende> Comprende { get; set; }
 
-    public virtual DbSet<Film> Films { get; set; }
+    public virtual DbSet<Film> Film { get; set; }
 
     public virtual DbSet<Genere> Generi { get; set; }
 
@@ -38,26 +38,23 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Comprende>(entity =>
         {
-            entity.HasKey(e => new { e.IdPosto, e.IdSala, e.IdPrenotazione, e.DataS, e.OraS, e.IdUtente })
+            entity.HasKey(e => new { e.IdPosto, e.IdPrenotazione})
                 .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0, 0, 0 });
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0});
 
             entity.ToTable("Comprende");
 
-            entity.HasIndex(e => new { e.IdPrenotazione, e.DataS, e.OraS, e.IdSala, e.IdUtente }, "IdPrenotazione");
+            entity.HasIndex(e => new { e.IdPrenotazione}, "IdPrenotazione");
 
             entity.Property(e => e.IdPosto).HasColumnType("int(11)");
-            entity.Property(e => e.IdSala).HasColumnType("int(11)");
             entity.Property(e => e.IdPrenotazione).HasColumnType("int(11)");
-            entity.Property(e => e.OraS).HasColumnType("time");
-            entity.Property(e => e.IdUtente).HasMaxLength(50);
 
             entity.HasOne(d => d.Id).WithMany(p => p.Comprendes)
-                .HasForeignKey(d => new { d.IdPosto, d.IdSala })
+                .HasForeignKey(d => new { d.IdPosto})
                 .HasConstraintName("comprende_ibfk_1");
 
             entity.HasOne(d => d.Prenotazione).WithMany(p => p.Comprendes)
-                .HasForeignKey(d => new { d.IdPrenotazione, d.DataS, d.OraS, d.IdSala, d.IdUtente })
+                .HasForeignKey(d => new { d.IdPrenotazione })
                 .HasConstraintName("comprende_ibfk_2");
         });
 
@@ -93,18 +90,16 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Posto>(entity =>
         {
-            entity.HasKey(e => new { e.Id, e.IdSala })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("Posto");
 
             entity.HasIndex(e => e.IdSala, "IdSala");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
-            entity.Property(e => e.IdSala).HasColumnType("int(11)");
             entity.Property(e => e.Costo).HasColumnType("double(4,2)");
             entity.Property(e => e.Fila).HasColumnType("int(11)");
+            entity.Property(e => e.IdSala).HasColumnType("int(11)");
             entity.Property(e => e.Numero).HasColumnType("int(11)");
 
             entity.HasOne(d => d.IdSalaNavigation).WithMany(p => p.Postos)
@@ -114,9 +109,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Prenotazione>(entity =>
         {
-            entity.HasKey(e => new { e.Id, e.DataS, e.OraS, e.IdSala, e.IdUtente })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0, 0 });
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("Prenotazione");
 
@@ -124,19 +117,19 @@ public partial class AppDbContext : DbContext
 
             entity.HasIndex(e => e.IdUtente, "IdUtente");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedOnAdd()
-                .HasColumnType("int(11)");
-            entity.Property(e => e.OraS).HasColumnType("time");
+            entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.IdSala).HasColumnType("int(11)");
             entity.Property(e => e.IdUtente).HasMaxLength(50);
+            entity.Property(e => e.OraS).HasColumnType("time");
 
             entity.HasOne(d => d.IdUtenteNavigation).WithMany(p => p.Prenotaziones)
                 .HasForeignKey(d => d.IdUtente)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("prenotazione_ibfk_2");
 
             entity.HasOne(d => d.Spettacolo).WithMany(p => p.Prenotaziones)
                 .HasForeignKey(d => new { d.DataS, d.OraS, d.IdSala })
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("prenotazione_ibfk_1");
         });
 

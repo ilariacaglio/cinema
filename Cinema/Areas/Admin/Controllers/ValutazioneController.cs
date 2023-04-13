@@ -49,7 +49,7 @@ namespace Cinema.Controllers
         // GET: Valutazione/Create
         public IActionResult Create()
         {
-            ViewData["IdFilm"] = new SelectList(_context.Films, "Id", "Id");
+            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id");
             ViewData["IdUtente"] = new SelectList(_context.Utenti, "Mail", "Mail");
             return View();
         }
@@ -67,7 +67,7 @@ namespace Cinema.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFilm"] = new SelectList(_context.Films, "Id", "Id", valutazione.IdFilm);
+            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", valutazione.IdFilm);
             ViewData["IdUtente"] = new SelectList(_context.Utenti, "Mail", "Mail", valutazione.IdUtente);
             return View(valutazione);
         }
@@ -85,7 +85,7 @@ namespace Cinema.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdFilm"] = new SelectList(_context.Films, "Id", "Id", valutazione.IdFilm);
+            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", valutazione.IdFilm);
             ViewData["IdUtente"] = new SelectList(_context.Utenti, "Mail", "Mail", valutazione.IdUtente);
             return View(valutazione);
         }
@@ -122,7 +122,7 @@ namespace Cinema.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFilm"] = new SelectList(_context.Films, "Id", "Id", valutazione.IdFilm);
+            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", valutazione.IdFilm);
             ViewData["IdUtente"] = new SelectList(_context.Utenti, "Mail", "Mail", valutazione.IdUtente);
             return View(valutazione);
         }

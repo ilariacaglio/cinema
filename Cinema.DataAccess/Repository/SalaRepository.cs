@@ -26,6 +26,8 @@ namespace Cinema.DataAccess.Repository
 
         public Sala? GetFirstOrDefault(int? id)
         {
+            if (id is null)
+                return null;
             return _db.Sale.Single(s => s.Id == id);
         }
 

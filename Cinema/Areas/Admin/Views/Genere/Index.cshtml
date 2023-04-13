@@ -1,14 +1,13 @@
-@model IEnumerable<Posto>
 @{
-    ViewData["Title"] = "Elenco Posti";
+    ViewData["Title"] = "Elenco Generi";
 }
 
 <div class="row">
-    <h2 class="col-6">Elenco Posti</h2>
+    <h2 class="col-6">Elenco Generi</h2>
     <p class="col-6 text-end my-2">
         <a asp-area="Admin" asp-action="Upsert">
             <button class="btn btn-primary">
-                <i class="bi bi-plus-square"></i> &nbsp; Aggiungi un nuovo posto
+                <i class="bi bi-plus-square"></i> &nbsp; Aggiungi un nuovo Genere
             </button>
         </a>
     </p>
@@ -17,10 +16,8 @@
 <table id="tblData" class="table table-bordered rounded-4" style="width:100%">
     <thead>
         <tr class="table-light">
-            <th>Numero Fila</th>
-            <th>Numero Posto</th>
-            <th>Costo</th>
-            <th>Numero Sala</th>
+            <th>Id</th>
+            <th>Genere</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -35,5 +32,5 @@
     }
 </style>
 @section Scripts{
-    <script src="~/js/Posto.js"></script>
+    <script src="~/js/Genere.js"></script>
 }

@@ -22,19 +22,19 @@ namespace Cinema.Controllers
         // GET: Film
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Films.Include(f => f.IdGenereNavigation);
+            var appDbContext = _context.Film.Include(f => f.IdGenereNavigation);
             return View(await appDbContext.ToListAsync());
         }
 
         // GET: Film/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Films == null)
+            if (id == null || _context.Film == null)
             {
                 return NotFound();
             }
 
-            var film = await _context.Films
+            var film = await _context.Film
                 .Include(f => f.IdGenereNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (film == null)
@@ -72,12 +72,12 @@ namespace Cinema.Controllers
         // GET: Film/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Films == null)
+            if (id == null || _context.Film == null)
             {
                 return NotFound();
             }
 
-            var film = await _context.Films.FindAsync(id);
+            var film = await _context.Film.FindAsync(id);
             if (film == null)
             {
                 return NotFound();
@@ -125,12 +125,12 @@ namespace Cinema.Controllers
         // GET: Film/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Films == null)
+            if (id == null || _context.Film == null)
             {
                 return NotFound();
             }
 
-            var film = await _context.Films
+            var film = await _context.Film
                 .Include(f => f.IdGenereNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (film == null)
@@ -146,14 +146,14 @@ namespace Cinema.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Films == null)
+            if (_context.Film == null)
             {
                 return Problem("Entity set 'AppDbContext.Films'  is null.");
             }
-            var film = await _context.Films.FindAsync(id);
+            var film = await _context.Film.FindAsync(id);
             if (film != null)
             {
-                _context.Films.Remove(film);
+                _context.Film.Remove(film);
             }
             
             await _context.SaveChangesAsync();
@@ -162,7 +162,7 @@ namespace Cinema.Controllers
 
         private bool FilmExists(int id)
         {
-          return (_context.Films?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Film?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
