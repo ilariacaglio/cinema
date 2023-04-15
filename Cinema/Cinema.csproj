@@ -49,6 +49,7 @@
     <Folder Include="Areas\Admin\Views\Genere\" />
     <Folder Include="wwwroot\images\film\" />
     <Folder Include="Areas\Admin\Views\Film\" />
+    <Folder Include="Areas\Admin\Views\Spettacolo\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Areas\" />
@@ -63,5 +64,6 @@
     <None Remove="Areas\Admin\Views\Posto\" />
     <None Remove="Areas\Admin\Views\Genere\" />
     <None Remove="Areas\Admin\Views\Film\" />
+    <None Remove="Areas\Admin\Views\Spettacolo\" />
   </ItemGroup>
 </Project>

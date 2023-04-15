@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row">
+    <h2 class="col-6">Elenco Spettacoli</h2>
+    <p class="col-6 text-end my-2">
+        <a asp-area="Admin" asp-action="Upsert">
+            <button class="btn btn-primary">
+                <i class="bi bi-plus-square"></i> &nbsp; Aggiungi un nuovo spettacolo
+            </button>
+        </a>
+    </p>
+</div>
+<br />
+<table id="tblData" class="table table-bordered rounded-4" style="width:100%">
+    <thead>
+        <tr class="table-light">
+            <th>Sala</th>
+            <th>Film</th>
+            <th>Data</th>
+            <th>Orario</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+</table>
+<style>
+    .btn-primary {
+        background-color: #264653;
+    }
+
+    .btn-danger {
+        background-color: #e63946;
+    }
+</style>
+@section Scripts{
+    <script src="~/js/Spettacolo.js"></script>
+}

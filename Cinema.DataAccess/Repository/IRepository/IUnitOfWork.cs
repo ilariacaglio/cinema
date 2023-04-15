@@ -7,6 +7,7 @@ namespace Cinema.DataAccess.Repository.IRepository
         IPostoRepository Posto { get; }
 		IGenereRepository Genere { get; }
 		IFilmRepository Film { get; }
+		ISpettacoloRepository Spettacolo { get; }
         void Save();
 	}
 }

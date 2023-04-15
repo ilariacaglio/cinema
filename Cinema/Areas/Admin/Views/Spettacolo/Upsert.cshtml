@@ -1,0 +1,57 @@
+﻿@model Cinema.Models.VM.SpettacoloVM
+@{
+    ViewData["Title"] = "Upsert";
+}
+<form method="post" asp-area="Admin" asp-action="Upsert" enctype="multipart/form-data">
+    <div class="col-12">
+        <div class="p-3 mt-4 row">
+            @if (Model.spettacolo.IdSala != 0)
+            {
+                <input asp-for="prevData" hidden />
+                <input asp-for="prevOra" hidden />
+                <input asp-for="prevSala" hidden />
+            }
+            <div class="col-12 pb-2">
+                <h2 class="text-primary">@(Model.spettacolo.IdSala !=0? "Modifica un":"Crea un nuovo") Spettacolo</h2>
+                <hr />
+            </div>
+            <div class="col-6">
+                <label asp-for="spettacolo.Data"></label>
+                <input type="datetime" asp-for="spettacolo.Data" class="form-control" required/>
+                <span asp-validation-for="spettacolo.Data" class="text-danger"></span>
+            </div>
+            <div class="col-6">
+                <label asp-for="spettacolo.Ora"></label>
+                <input type="datetime" asp-for="spettacolo.Ora" class="form-control" />
+                <span asp-validation-for="spettacolo.Ora" class="text-danger"></span>
+            </div>
+            <div class="col-6 my-2">
+                <label asp-for="spettacolo.IdFilm"></label>
+                <select asp-for="spettacolo.IdFilm" class="form-control" asp-items="@Model.FilmList"></select>
+            </div>
+            <div class="col-6 my-2">
+                <label asp-for="spettacolo.IdSala"></label>
+                <select asp-for="spettacolo.IdSala" class="form-control" asp-items="@Model.SalaList"></select>
+            </div>
+
+            <div class="col-12 my-2">
+                @if (Model.spettacolo.IdSala != 0)
+                {
+                    <button type="submit" asp-controller="Spettacolo" asp-action="Upsert" class="btn btn-primary" style="width:150px">Update</button>
+                }
+                else
+                {
+                    <button type="submit" asp-controller="Spettacolo" asp-action="Upsert" class="btn btn-primary" style="width:150px">Create</button>
+                }
+                <a asp-controller="Spettacolo" asp-action="Index" class="btn btn-secondary" style="width:150px">
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

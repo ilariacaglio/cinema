@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
 using Cinema.DataAccess.Repository.IRepository;
+using Cinema.DataAccess.Repository;
+using Microsoft.Extensions.Hosting;
+using Cinema.Models.VM;
 
 namespace Cinema.Controllers
 {
@@ -22,155 +25,105 @@ namespace Cinema.Controllers
         }
 
         // GET: Spettacolo
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var appDbContext = _context.Spettacoli.Include(s => s.IdFilmNavigation).Include(s => s.IdSalaNavigation);
-            return View(await appDbContext.ToListAsync());
+            var spettacoli = _unitOfWork.Spettacolo.GetAll();
+            return View(spettacoli);
         }
 
         // GET: Spettacolo/Details/5
-        public async Task<IActionResult> Details(DateOnly? id)
+        public async Task<IActionResult> Details(DateOnly data, TimeOnly ora, int? salaId)
         {
-            if (id == null || _context.Spettacoli == null)
-            {
+            if (salaId == null || _unitOfWork.Spettacolo == null)
                 return NotFound();
-            }
 
-            var spettacolo = await _context.Spettacoli
-                .Include(s => s.IdFilmNavigation)
-                .Include(s => s.IdSalaNavigation)
-                .FirstOrDefaultAsync(m => m.Data == id);
+            var spettacolo = _unitOfWork.Spettacolo.GetFirstOrDefault(data, ora, salaId);
+
             if (spettacolo == null)
-            {
                 return NotFound();
-            }
 
             return View(spettacolo);
         }
 
-        // GET: Spettacolo/Create
-        public IActionResult Create()
+        //GET
+        public IActionResult Upsert(DateOnly data, TimeOnly ora, int? salaId)
         {
-            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id");
-            ViewData["IdSala"] = new SelectList(_context.Sale, "Id", "Id");
-            return View();
+            SpettacoloVM s = new SpettacoloVM() {
+                spettacolo = new Spettacolo(),
+                SalaList = _unitOfWork.Sala.GetAll().Select(
+                s => new SelectListItem
+                {
+                    Text = s.Id.ToString(),
+                    Value = s.Id.ToString()
+                }),
+                FilmList = _unitOfWork.Film.GetAll().Select(
+                f => new SelectListItem
+                {
+                    Text = f.Titolo,
+                    Value = f.Id.ToString()
+                })
+            };
+            if (salaId == 0)
+                return View(s);
+            else
+            {
+                var spettacoloInDb = _unitOfWork.Spettacolo.GetFirstOrDefault(data, ora, salaId);
+                if (spettacoloInDb != null)
+                {
+                    s.spettacolo = spettacoloInDb;
+                    s.spettacolo.IdFilmNavigation = _unitOfWork.Film.GetFirstOrDefault(s.spettacolo.IdFilm);
+                    s.spettacolo.IdSalaNavigation = _unitOfWork.Sala.GetFirstOrDefault(s.spettacolo.IdSala);
+                    s.prevData = spettacoloInDb.Data;
+                    s.prevOra = spettacoloInDb.Ora;
+                    s.prevSala = spettacoloInDb.IdSala;
+                    return View(s);
+                }
+                return View(s);
+            }
         }
 
-        // POST: Spettacolo/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Data,Ora,IdFilm,IdSala")] Spettacolo spettacolo)
+        public IActionResult Upsert(SpettacoloVM obj)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(spettacolo);
-                await _context.SaveChangesAsync();
+                if (obj.prevData != obj.spettacolo.Data ||
+                    obj.prevOra != obj.spettacolo.Ora ||
+                    obj.prevSala != obj.spettacolo.IdSala)
+                {
+                    var spettacoloFromDb = _unitOfWork.Spettacolo.GetFirstOrDefault(obj.prevData, obj.prevOra, obj.prevSala);
+                    if (spettacoloFromDb != null)
+                        _unitOfWork.Spettacolo.Remove(spettacoloFromDb);
+                }
+                _unitOfWork.Spettacolo.Add(obj.spettacolo);
+                TempData["success"] = "Spettacolo creato con successo";
+                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", spettacolo.IdFilm);
-            ViewData["IdSala"] = new SelectList(_context.Sale, "Id", "Id", spettacolo.IdSala);
-            return View(spettacolo);
+            return View(obj);
         }
 
-        // GET: Spettacolo/Edit/5
-        public async Task<IActionResult> Edit(DateOnly? id)
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            if (id == null || _context.Spettacoli == null)
-            {
-                return NotFound();
-            }
-
-            var spettacolo = await _context.Spettacoli.FindAsync(id);
-            if (spettacolo == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", spettacolo.IdFilm);
-            ViewData["IdSala"] = new SelectList(_context.Sale, "Id", "Id", spettacolo.IdSala);
-            return View(spettacolo);
+            var spettacoloList = _unitOfWork.Spettacolo.GetAll();
+            return Json(new { data = spettacoloList });
         }
 
-        // POST: Spettacolo/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(DateOnly id, [Bind("Data,Ora,IdFilm,IdSala")] Spettacolo spettacolo)
+        [HttpDelete]
+        public IActionResult Delete(DateOnly data, TimeOnly ora, int? salaId)
         {
-            if (id != spettacolo.Data)
+            var objFromDbFirst = _unitOfWork.Spettacolo.GetFirstOrDefault(data,ora ,salaId);
+            if (objFromDbFirst == null)
+                return Json(new { success = false, message = "Error while deleting" });
+            else
             {
-                return NotFound();
+                _unitOfWork.Spettacolo.Remove(objFromDbFirst);
+                _unitOfWork.Save();
+                return Json(new { success = true, message = "Delete Successful" });
             }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(spettacolo);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SpettacoloExists(spettacolo.Data))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", spettacolo.IdFilm);
-            ViewData["IdSala"] = new SelectList(_context.Sale, "Id", "Id", spettacolo.IdSala);
-            return View(spettacolo);
-        }
-
-        // GET: Spettacolo/Delete/5
-        public async Task<IActionResult> Delete(DateOnly? id)
-        {
-            if (id == null || _context.Spettacoli == null)
-            {
-                return NotFound();
-            }
-
-            var spettacolo = await _context.Spettacoli
-                .Include(s => s.IdFilmNavigation)
-                .Include(s => s.IdSalaNavigation)
-                .FirstOrDefaultAsync(m => m.Data == id);
-            if (spettacolo == null)
-            {
-                return NotFound();
-            }
-
-            return View(spettacolo);
-        }
-
-        // POST: Spettacolo/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(DateOnly id)
-        {
-            if (_context.Spettacoli == null)
-            {
-                return Problem("Entity set 'AppDbContext.Spettacoli'  is null.");
-            }
-            var spettacolo = await _context.Spettacoli.FindAsync(id);
-            if (spettacolo != null)
-            {
-                _context.Spettacoli.Remove(spettacolo);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool SpettacoloExists(DateOnly id)
-        {
-          return (_context.Spettacoli?.Any(e => e.Data == id)).GetValueOrDefault();
         }
     }
 }

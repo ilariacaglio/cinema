@@ -25,9 +25,15 @@ namespace Cinema.DataAccess.Repository
 
         public Spettacolo? GetFirstOrDefault(DateOnly data, TimeOnly ora, int? salaId)
         {
-            if (salaId is null)
+            try
+            {
+                var spettacolo = _db.Spettacoli.Single(s => s.IdSala == salaId && s.Data == data && s.Ora == ora);
+                return spettacolo;
+            }
+            catch (Exception ex)
+            {
                 return null;
-            return _db.Spettacoli.Single(s => s.IdSala == salaId && s.Data == data && s.Ora == ora);
+            }
         }
 
         public Spettacolo? GetFirstOrDefault(int? id)

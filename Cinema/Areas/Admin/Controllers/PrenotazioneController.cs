@@ -10,6 +10,7 @@ using Cinema.Models;
 
 namespace Cinema.Controllers
 {
+    [Area("Admin")]
     public class PrenotazioneController : Controller
     {
         private readonly AppDbContext _context;
