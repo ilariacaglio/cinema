@@ -1,7 +1,10 @@
-﻿using Cinema.DataAccess;
+using Cinema.DataAccess;
 using Cinema.DataAccess.Repository;
 using Cinema.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Cinema.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +20,16 @@ builder.Services.AddDbContext<AppDbContext>(
     .EnableSensitiveDataLogging()
     .EnableDetailedErrors()
 );
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddIdentity<Cinema.Areas.Identity.Data.AspNetUsers, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = false;
+})
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddRazorPages();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,9 +44,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllerRoute(
       name: "areas",
       pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
@@ -44,4 +56,6 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=User}/{controller=Home}/{action=Index}/{id?}");
+
+
 app.Run();

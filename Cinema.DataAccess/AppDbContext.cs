@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cinema.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cinema.DataAccess;
 
-public partial class AppDbContext : DbContext
+public partial class AppDbContext : IdentityDbContext<IdentityUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -206,6 +208,7 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("valutazione_ibfk_1");
         });
 
+        base.OnModelCreating(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
     }
 
