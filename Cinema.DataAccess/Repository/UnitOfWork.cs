@@ -12,11 +12,13 @@ namespace Cinema.DataAccess.Repository
             Sala = new SalaRepository(_db);
             Posto = new PostoRepository(_db);
             Genere = new GenereRepository(_db);
+            Film = new FilmRepository(_db);
         }
 
         public ISalaRepository Sala { get; private set; } = null!;
         public IPostoRepository Posto { get; private set; } = null!;
         public IGenereRepository Genere { get; private set; } = null!;
+        public IFilmRepository Film { get; private set; } = null!;
 
         public void Save()
         {

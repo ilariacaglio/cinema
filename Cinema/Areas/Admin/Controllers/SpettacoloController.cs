@@ -7,16 +7,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
+using Cinema.DataAccess.Repository.IRepository;
 
 namespace Cinema.Controllers
 {
+    [Area("Admin")]
     public class SpettacoloController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public SpettacoloController(AppDbContext context)
+        public SpettacoloController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Spettacolo

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Cinema.Models;
 
@@ -19,9 +20,12 @@ public partial class Film
 
     public int IdGenere { get; set; }
 
+    [ValidateNever]
     public virtual Genere IdGenereNavigation { get; set; } = null!;
 
+    [ValidateNever]
     public virtual ICollection<Spettacolo> Spettacolos { get; } = new List<Spettacolo>();
 
+    [ValidateNever]
     public virtual ICollection<Valutazione> Valutaziones { get; } = new List<Valutazione>();
 }

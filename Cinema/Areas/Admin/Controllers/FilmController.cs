@@ -7,162 +7,140 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
+using Cinema.DataAccess.Repository.IRepository;
+using Microsoft.Extensions.Hosting;
 
 namespace Cinema.Controllers
 {
+    [Area("Admin")]
     public class FilmController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public FilmController(AppDbContext context)
+        public FilmController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: Film
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var appDbContext = _context.Film.Include(f => f.IdGenereNavigation);
-            return View(await appDbContext.ToListAsync());
+            var film = _unitOfWork.Film.GetAll();
+            return View(film);
         }
 
         // GET: Film/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
-            if (id == null || _context.Film == null)
-            {
+            if (id == null || _unitOfWork.Film == null)
                 return NotFound();
-            }
 
-            var film = await _context.Film
-                .Include(f => f.IdGenereNavigation)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (film == null)
-            {
-                return NotFound();
-            }
-
-            return View(film);
-        }
-
-        // GET: Film/Create
-        public IActionResult Create()
-        {
-            ViewData["IdGenere"] = new SelectList(_context.Generi, "Id", "Id");
-            return View();
-        }
-
-        // POST: Film/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Titolo,Durata,Anno,Descrizione,Img,IdGenere")] Film film)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(film);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdGenere"] = new SelectList(_context.Generi, "Id", "Id", film.IdGenere);
-            return View(film);
-        }
-
-        // GET: Film/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Film == null)
-            {
-                return NotFound();
-            }
-
-            var film = await _context.Film.FindAsync(id);
-            if (film == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdGenere"] = new SelectList(_context.Generi, "Id", "Id", film.IdGenere);
-            return View(film);
-        }
-
-        // POST: Film/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Titolo,Durata,Anno,Descrizione,Img,IdGenere")] Film film)
-        {
-            if (id != film.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(film);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FilmExists(film.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdGenere"] = new SelectList(_context.Generi, "Id", "Id", film.IdGenere);
-            return View(film);
-        }
-
-        // GET: Film/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Film == null)
-            {
-                return NotFound();
-            }
-
-            var film = await _context.Film
-                .Include(f => f.IdGenereNavigation)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (film == null)
-            {
-                return NotFound();
-            }
-
-            return View(film);
-        }
-
-        // POST: Film/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Film == null)
-            {
-                return Problem("Entity set 'AppDbContext.Films'  is null.");
-            }
-            var film = await _context.Film.FindAsync(id);
-            if (film != null)
-            {
-                _context.Film.Remove(film);
-            }
+            var film = _unitOfWork.Film.GetFirstOrDefault(id);
             
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (film == null)
+                return NotFound();
+            film.IdGenereNavigation = _unitOfWork.Genere.GetFirstOrDefault(film.IdGenere);
+
+            return View(film);
         }
 
-        private bool FilmExists(int id)
+        //GET
+        public IActionResult Upsert(int? id)
         {
-          return (_context.Film?.Any(e => e.Id == id)).GetValueOrDefault();
+            Film f = new Film();
+            ViewBag.Genere = _unitOfWork.Genere.GetAll().Select(
+                g => new SelectListItem
+                {
+                    Text = g.Nome,
+                    Value = g.Id.ToString()
+                });
+            if (id == null || id == 0)
+                return View(f);
+            else
+            {
+                var filmInDb = _unitOfWork.Film.GetFirstOrDefault(id);
+                if (filmInDb != null)
+                {
+                    f = filmInDb;
+                    f.IdGenereNavigation = _unitOfWork.Genere.GetFirstOrDefault(f.IdGenere);
+                    return View(f);
+                }
+                return View(f);
+            }
+        }
+
+        //UPSERT
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Upsert(Film obj, IFormFile? file)
+        {
+            if (ModelState.IsValid)
+            {
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString();
+                    var uploadDir = Path.Combine(wwwRootPath, "images", "film");
+                    var fileExtension = Path.GetExtension(file.FileName);
+                    if (obj.Img != null)
+                    {
+                        var oldImagePath = Path.Combine(wwwRootPath, obj.Img.TrimStart(Path.DirectorySeparatorChar));
+                        if (System.IO.File.Exists(oldImagePath))
+                            System.IO.File.Delete(oldImagePath);
+                    }
+                    var filePath = Path.Combine(uploadDir, fileName + fileExtension);
+                    var fileUrlString = filePath[wwwRootPath.Length..].Replace(@"\\", @"\");
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    obj.Img = fileUrlString;
+                }
+                if (obj.Id == 0)
+                {
+                    _unitOfWork.Film.Add(obj);
+                    TempData["success"] = "Film creato con successo";
+                }
+                else
+                {
+                    _unitOfWork.Film.Update(obj);
+                    TempData["success"] = "Film modificato con successo";
+                }
+                _unitOfWork.Save();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(obj);
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var filmList = _unitOfWork.Film.GetAll();
+            return Json(new { data = filmList });
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            var objFromDbFirst = _unitOfWork.Film.GetFirstOrDefault(id);
+            if (objFromDbFirst == null)
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+            else 
+            {
+                if (objFromDbFirst.Img != null) //l'oggetto ha un ImageUrl
+                {
+                    var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, objFromDbFirst.Img.TrimStart(Path.DirectorySeparatorChar));
+                    if (System.IO.File.Exists(oldImagePath))
+                        System.IO.File.Delete(oldImagePath);
+                }
+                _unitOfWork.Film.Remove(objFromDbFirst);
+                _unitOfWork.Save();
+                return Json(new { success = true, message = "Delete Successful" });
+            }
         }
     }
 }
