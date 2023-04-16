@@ -6,7 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Cinema.Areas.Identity.Data;
+using Cinema.Utility;
 using Cinema.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +16,12 @@ namespace Cinema.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<AspNetUsers> _userManager;
-        private readonly SignInManager<AspNetUsers> _signInManager;
+        private readonly UserManager<Utente> _userManager;
+        private readonly SignInManager<Utente> _signInManager;
 
         public IndexModel(
-            UserManager<AspNetUsers> userManager,
-            SignInManager<AspNetUsers> signInManager)
+            UserManager<Utente> userManager,
+            SignInManager<Utente> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -60,6 +60,11 @@ namespace Cinema.Areas.Identity.Pages.Account.Manage
             /// </summary>
             ///
             [Required]
+            [DataType(DataType.EmailAddress)]
+            [Display(Name = "EMail")]
+            public string Email { get; set; }
+
+            [Required]
             [DataType(DataType.Text)]
             [Display(Name = "Nome")]
             public string Nome { get; set; }
@@ -68,16 +73,6 @@ namespace Cinema.Areas.Identity.Pages.Account.Manage
             [DataType(DataType.Text)]
             [Display(Name = "Cognome")]
             public string Cognome { get; set; }
-
-            [Required]
-            [DataType(DataType.EmailAddress)]
-            [Display(Name = "Mail")]
-            public string Mail { get; set; }
-
-            [Required]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
 
             [Required]
             [DataType(DataType.Text)]
@@ -94,14 +89,18 @@ namespace Cinema.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Indirizzo")]
             public string Residenza { get; set; }
 
-
             [Required]
             [DataType(DataType.PhoneNumber)]
             [Display(Name = "Numero di Telefono")]
             public string PhoneNumber { get; set; }
+
+            [Required]
+            [DataType(DataType.Password)]
+            [Display(Name = "Password")]
+            public string Password { get; set; }
         }
 
-        private async Task LoadAsync(AspNetUsers user)
+        private async Task LoadAsync(Utente user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -111,10 +110,8 @@ namespace Cinema.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                Mail = user.Mail,
                 Nome = user.Nome,
                 Cognome = user.Cognome,
-                Password = user.Password,
                 Nascita = user.Nascita,
                 Residenza = user.Residenza,
                 Sesso = user.Sesso
@@ -129,7 +126,7 @@ namespace Cinema.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            await LoadAsync((AspNetUsers)user);
+            await LoadAsync(user);
             return Page();
         }
 
@@ -143,7 +140,7 @@ namespace Cinema.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
-                await LoadAsync((AspNetUsers)user);
+                await LoadAsync(user);
                 return Page();
             }
 
@@ -179,9 +176,9 @@ namespace Cinema.Areas.Identity.Pages.Account.Manage
             {
                 user.Sesso = Input.Sesso;
             }
-            if (Input.Mail != user.Mail)
+            if (Input.Email != user.Email)
             {
-                user.Mail = Input.Mail;
+                user.Email = Input.Email;
             }
 
             await _userManager.UpdateAsync(user);

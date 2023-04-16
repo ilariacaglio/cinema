@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Cinema.Utility;
+using Cinema.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,7 @@ builder.Services.AddDbContext<AppDbContext>(
     .EnableDetailedErrors()
 );
 
-builder.Services.AddIdentity<Cinema.Areas.Identity.Data.AspNetUsers, IdentityRole>(options =>
+builder.Services.AddIdentity<Utente, IdentityRole>(options =>
 {
     options.User.RequireUniqueEmail = false;
 })

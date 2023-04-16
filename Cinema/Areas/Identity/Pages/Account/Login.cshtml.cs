@@ -14,16 +14,17 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Cinema.Areas.Identity.Data;
+using Cinema.Utility;
+using Cinema.Models;
 
 namespace Cinema.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<AspNetUsers> _signInManager;
+        private readonly SignInManager<Utente> _signInManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<AspNetUsers> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<Utente> signInManager, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;

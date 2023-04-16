@@ -1,8 +1,8 @@
 @using Microsoft.AspNetCore.Identity;
-@using Cinema.Areas.Identity.Data;
+@using Cinema.Models;
 
-@inject SignInManager<AspNetUsers> SignInManager
-@inject UserManager<AspNetUsers> UserManager
+@inject SignInManager<Utente> SignInManager
+@inject UserManager<Utente> UserManager
 
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))

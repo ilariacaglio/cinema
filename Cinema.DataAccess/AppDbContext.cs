@@ -173,17 +173,21 @@ public partial class AppDbContext : IdentityDbContext<IdentityUser>
 
         modelBuilder.Entity<Utente>(entity =>
         {
-            entity.HasKey(e => e.Mail).HasName("PRIMARY");
+            
+            //entity.ToTable("Utente");
 
-            entity.ToTable("Utente");
-
-            entity.Property(e => e.Mail).HasMaxLength(50);
+            entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.Cognome).HasMaxLength(20);
             entity.Property(e => e.Nome).HasMaxLength(20);
-            entity.Property(e => e.Password).HasMaxLength(50);
+            entity.Property(e => e.PasswordHash).HasMaxLength(50);
             entity.Property(e => e.Residenza).HasMaxLength(50);
             entity.Property(e => e.Sesso).HasMaxLength(1);
         });
+
+        //modelBuilder.Entity<IdentityUser>(entity =>
+        //{
+        //    entity.HasKey(e => e.Email).HasName("PRIMARY");
+        //});
 
         modelBuilder.Entity<Valutazione>(entity =>
         {

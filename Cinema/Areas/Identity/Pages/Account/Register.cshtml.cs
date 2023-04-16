@@ -10,7 +10,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
-using Cinema.Areas.Identity.Data;
+using Cinema.DataAccess;
+using Cinema.Models;
+using Cinema.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -24,26 +26,29 @@ namespace Cinema.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<AspNetUsers> _signInManager;
-        private readonly UserManager<AspNetUsers> _userManager;
-        private readonly IUserStore<AspNetUsers> _userStore;
-        private readonly IUserEmailStore<AspNetUsers> _emailStore;
+        private readonly SignInManager<Utente> _signInManager;
+        private readonly UserManager<Utente> _userManager;
+        private readonly IUserStore<Utente> _userStore;
+        private readonly IUserEmailStore<Utente> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
-            UserManager<AspNetUsers> userManager,
-            IUserStore<AspNetUsers> userStore,
-            SignInManager<AspNetUsers> signInManager,
+            UserManager<Utente> userManager,
+            IUserStore<Utente> userStore,
+            SignInManager<Utente> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
-            _emailStore = (IUserEmailStore<AspNetUsers>)GetEmailStore();
+            _emailStore = (IUserEmailStore<Utente>)GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -127,6 +132,12 @@ namespace Cinema.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if (!_roleManager.RoleExistsAsync(SD.Role_Admin).GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_Admin)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_User)).GetAwaiter().GetResult();
+            }
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -137,7 +148,7 @@ namespace Cinema.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = (AspNetUsers)CreateUser();
+                var user = CreateUser();
 
                 user.Nome = Input.Nome;
                 user.Cognome = Input.Cognome;
@@ -185,27 +196,27 @@ namespace Cinema.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private Utente CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<Utente>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
-                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(Utente)}'. " +
+                    $"Ensure that '{nameof(Utente)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<AspNetUsers> GetEmailStore()
+        private IUserEmailStore<Utente> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<AspNetUsers>)_userStore;
+            return (IUserEmailStore<Utente>)_userStore;
         }
     }
 }

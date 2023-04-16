@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Identity;
 
-namespace Cinema.Areas.Identity.Data
+namespace Cinema.Utility
 {
 	public class AspNetUsers : IdentityUser
     {
@@ -10,12 +10,6 @@ namespace Cinema.Areas.Identity.Data
 
         [PersonalData]
         public string Nome { get; set; } = null!;
-
-        [PersonalData]
-        public string Mail { get; set; } = null!;
-
-        [PersonalData]
-        public string Password { get; set; } = null!;
 
         [PersonalData]
         public string Sesso { get; set; } = null!;
