@@ -7,146 +7,92 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
+using Cinema.DataAccess.Repository.IRepository;
+using Cinema.Models.VM;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Cinema.Controllers
 {
+    [Area("Admin")]
     public class ValutazioneController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ValutazioneController(AppDbContext context)
+        public ValutazioneController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Valutazione
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Valutazioni.Include(v => v.IdFilmNavigation).Include(v => v.IdUtenteNavigation);
-            return View(await appDbContext.ToListAsync());
+            var valutazioni = _unitOfWork.Valutazione.GetAll();
+            return View(valutazioni);
         }
 
         // GET: Valutazione/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(string idUtente, int? idFilm)
         {
-            if (id == null || _context.Valutazioni == null)
-            {
+            if (idUtente == null || idFilm == null || _unitOfWork.Valutazione == null)
                 return NotFound();
-            }
+            var valutazione = _unitOfWork.Valutazione.GetFirstOrDefault(idFilm, idUtente);
 
-            var valutazione = await _context.Valutazioni
-                .Include(v => v.IdFilmNavigation)
-                .Include(v => v.IdUtenteNavigation)
-                .FirstOrDefaultAsync(m => m.IdUtente == id);
             if (valutazione == null)
-            {
                 return NotFound();
-            }
+
+            valutazione.IdFilmNavigation = _unitOfWork.Film.GetFirstOrDefault(valutazione.IdFilm);
+            //sistema l'utente
+            //valutazione.IdUtenteNavigation = _unitOfWork.
+
 
             return View(valutazione);
         }
 
-        // GET: Valutazione/Create
-        public IActionResult Create()
+        //GET
+        public IActionResult Upsert(string idUtente, int? idFilm)
         {
-            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id");
-            ViewData["IdUtente"] = new SelectList(_context.Utenti, "Mail", "Mail");
-            return View();
+            Valutazione v = new Valutazione();
+            if (idFilm == 0)
+                return View(v);
+            else
+            {
+                var valutazioneInDb = _unitOfWork.Valutazione.GetFirstOrDefault(idFilm, idUtente);
+                if (valutazioneInDb != null)
+                {
+                    v.IdFilm = valutazioneInDb.IdFilm;
+                    v.IdFilmNavigation = _unitOfWork.Film.GetFirstOrDefault(v.IdFilm);
+                    v.IdUtente = valutazioneInDb.IdUtente;
+                    //fai l'iunitofwork
+                    v.IdUtenteNavigation = _unitOfWork.Sala.GetFirstOrDefault(s.spettacolo.IdSala);
+                    v.Voto = valutazioneInDb.Voto;
+                    return View(s);
+                }
+                return View(s);
+            }
         }
 
-        // POST: Valutazione/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUtente,IdFilm,Voto")] Valutazione valutazione)
+        public IActionResult Upsert(SpettacoloVM obj)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(valutazione);
-                await _context.SaveChangesAsync();
+                if (obj.prevData != obj.spettacolo.Data ||
+                    obj.prevOra != obj.spettacolo.Ora ||
+                    obj.prevSala != obj.spettacolo.IdSala)
+                {
+                    var spettacoloFromDb = _unitOfWork.Spettacolo.GetFirstOrDefault(obj.prevData, obj.prevOra, obj.prevSala);
+                    if (spettacoloFromDb != null)
+                        _unitOfWork.Spettacolo.Remove(spettacoloFromDb);
+                }
+                _unitOfWork.Spettacolo.Add(obj.spettacolo);
+                TempData["success"] = "Spettacolo creato con successo";
+                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", valutazione.IdFilm);
-            ViewData["IdUtente"] = new SelectList(_context.Utenti, "Mail", "Mail", valutazione.IdUtente);
-            return View(valutazione);
+            return View(obj);
         }
-
-        // GET: Valutazione/Edit/5
-        public async Task<IActionResult> Edit(string id)
-        {
-            if (id == null || _context.Valutazioni == null)
-            {
-                return NotFound();
-            }
-
-            var valutazione = await _context.Valutazioni.FindAsync(id);
-            if (valutazione == null)
-            {
-                return NotFound();
-            }
-            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", valutazione.IdFilm);
-            ViewData["IdUtente"] = new SelectList(_context.Utenti, "Mail", "Mail", valutazione.IdUtente);
-            return View(valutazione);
-        }
-
-        // POST: Valutazione/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("IdUtente,IdFilm,Voto")] Valutazione valutazione)
-        {
-            if (id != valutazione.IdUtente)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(valutazione);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ValutazioneExists(valutazione.IdUtente))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdFilm"] = new SelectList(_context.Film, "Id", "Id", valutazione.IdFilm);
-            ViewData["IdUtente"] = new SelectList(_context.Utenti, "Mail", "Mail", valutazione.IdUtente);
-            return View(valutazione);
-        }
-
-        // GET: Valutazione/Delete/5
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null || _context.Valutazioni == null)
-            {
-                return NotFound();
-            }
-
-            var valutazione = await _context.Valutazioni
-                .Include(v => v.IdFilmNavigation)
-                .Include(v => v.IdUtenteNavigation)
-                .FirstOrDefaultAsync(m => m.IdUtente == id);
-            if (valutazione == null)
-            {
-                return NotFound();
-            }
-
-            return View(valutazione);
-        }
-
         // POST: Valutazione/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

@@ -14,6 +14,7 @@ namespace Cinema.DataAccess.Repository
             Genere = new GenereRepository(_db);
             Film = new FilmRepository(_db);
             Spettacolo = new SpettacoloRepository(_db);
+            Valutazione = new ValutazioneRepository(_db);
         }
 
         public ISalaRepository Sala { get; private set; } = null!;
@@ -21,6 +22,7 @@ namespace Cinema.DataAccess.Repository
         public IGenereRepository Genere { get; private set; } = null!;
         public IFilmRepository Film { get; private set; } = null!;
         public ISpettacoloRepository Spettacolo { get; private set; } = null!;
+        public IValutazioneRepository Valutazione { get; private set; } = null!;
 
         public void Save()
         {
