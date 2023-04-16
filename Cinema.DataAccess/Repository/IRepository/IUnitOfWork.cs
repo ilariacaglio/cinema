@@ -10,6 +10,7 @@ namespace Cinema.DataAccess.Repository.IRepository
 		ISpettacoloRepository Spettacolo { get; }
 		IUtenteRepository Utente { get; }
 		IValutazioneRepository Valutazione { get; }
+		IPrenotazioneRepository Prenotazione { get; }
         void Save();
 	}
 }
