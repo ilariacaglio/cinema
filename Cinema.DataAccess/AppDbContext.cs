@@ -173,9 +173,6 @@ public partial class AppDbContext : IdentityDbContext<IdentityUser>
 
         modelBuilder.Entity<Utente>(entity =>
         {
-            
-            //entity.ToTable("Utente");
-
             entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.Cognome).HasMaxLength(20);
             entity.Property(e => e.Nome).HasMaxLength(20);
@@ -183,11 +180,6 @@ public partial class AppDbContext : IdentityDbContext<IdentityUser>
             entity.Property(e => e.Residenza).HasMaxLength(50);
             entity.Property(e => e.Sesso).HasMaxLength(1);
         });
-
-        //modelBuilder.Entity<IdentityUser>(entity =>
-        //{
-        //    entity.HasKey(e => e.Email).HasName("PRIMARY");
-        //});
 
         modelBuilder.Entity<Valutazione>(entity =>
         {
