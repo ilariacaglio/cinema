@@ -17,10 +17,13 @@ public partial class Posto
     [Range(1, 250)]
     public int Numero { get; set; }
 
+    [Required]
     public double Costo { get; set; }
 
+    [Required]
     public int IdSala { get; set; }
 
+    [ValidateNever]
     public virtual ICollection<Comprende> Comprendes { get; } = new List<Comprende>();
 
     [ValidateNever]

@@ -11,6 +11,7 @@ namespace Cinema.DataAccess.Repository.IRepository
 		IUtenteRepository Utente { get; }
 		IValutazioneRepository Valutazione { get; }
 		IPrenotazioneRepository Prenotazione { get; }
+		IComprendeRepository Comprende { get; }
         void Save();
 	}
 }

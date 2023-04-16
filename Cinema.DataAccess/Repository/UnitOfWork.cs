@@ -17,6 +17,7 @@ namespace Cinema.DataAccess.Repository
             Utente = new UtenteRepository(_db);
             Valutazione = new ValutazioneRepository(_db);
             Prenotazione = new PrenotazioneRepository(_db);
+            Comprende = new ComprendeRepository(_db);
         }
 
         public ISalaRepository Sala { get; private set; } = null!;
@@ -27,6 +28,7 @@ namespace Cinema.DataAccess.Repository
         public IUtenteRepository Utente { get; private set; } = null!;
         public IValutazioneRepository Valutazione { get; private set; } = null!;
         public IPrenotazioneRepository Prenotazione { get; private set; } = null!;
+        public IComprendeRepository Comprende { get; private set; } = null!;
 
         public void Save()
         {
