@@ -28,7 +28,14 @@ namespace Cinema.DataAccess.Repository
         {
             if (idFilm is null || idUtente is null)
                 return null;
-            return _db.Valutazioni.Single(v => v.IdFilm == idFilm && v.IdUtente == idUtente);
+            try
+            {
+                return _db.Valutazioni.Single(v => v.IdFilm == idFilm && v.IdUtente == idUtente);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public Valutazione? GetFirstOrDefault(int? id)

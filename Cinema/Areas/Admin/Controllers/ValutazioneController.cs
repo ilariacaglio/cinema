@@ -9,7 +9,7 @@ using Cinema.DataAccess;
 using Cinema.Models;
 using Cinema.DataAccess.Repository.IRepository;
 using Cinema.Models.VM;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace Cinema.Controllers
 {
@@ -41,10 +41,7 @@ namespace Cinema.Controllers
                 return NotFound();
 
             valutazione.IdFilmNavigation = _unitOfWork.Film.GetFirstOrDefault(valutazione.IdFilm);
-            //sistema l'utente
-            //valutazione.IdUtenteNavigation = _unitOfWork.
-
-
+            valutazione.IdUtenteNavigation = _unitOfWork.Utente.GetFirstOrDefault(valutazione.IdUtente);
             return View(valutazione);
         }
 
@@ -62,59 +59,55 @@ namespace Cinema.Controllers
                     v.IdFilm = valutazioneInDb.IdFilm;
                     v.IdFilmNavigation = _unitOfWork.Film.GetFirstOrDefault(v.IdFilm);
                     v.IdUtente = valutazioneInDb.IdUtente;
-                    //fai l'iunitofwork
-                    v.IdUtenteNavigation = _unitOfWork.Sala.GetFirstOrDefault(s.spettacolo.IdSala);
-                    v.Voto = valutazioneInDb.Voto;
-                    return View(s);
+                    v.IdUtenteNavigation = _unitOfWork.Utente.GetFirstOrDefault(v.IdUtente);
+                    return View(v);
                 }
-                return View(s);
+                return View(v);
             }
         }
 
         //UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(SpettacoloVM obj)
+        public IActionResult Upsert(Valutazione obj)
         {
             if (ModelState.IsValid)
             {
-                if (obj.prevData != obj.spettacolo.Data ||
-                    obj.prevOra != obj.spettacolo.Ora ||
-                    obj.prevSala != obj.spettacolo.IdSala)
+                var valutazioneInDb = _unitOfWork.Valutazione.GetFirstOrDefault(obj.IdFilm, obj.IdUtente);
+                if (valutazioneInDb == null)
                 {
-                    var spettacoloFromDb = _unitOfWork.Spettacolo.GetFirstOrDefault(obj.prevData, obj.prevOra, obj.prevSala);
-                    if (spettacoloFromDb != null)
-                        _unitOfWork.Spettacolo.Remove(spettacoloFromDb);
+                    _unitOfWork.Valutazione.Add(obj);
                 }
-                _unitOfWork.Spettacolo.Add(obj.spettacolo);
-                TempData["success"] = "Spettacolo creato con successo";
+                else
+                {
+                    valutazioneInDb.Voto = obj.Voto;
+                    _unitOfWork.Valutazione.Update(valutazioneInDb);
+                }
                 _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
             }
             return View(obj);
         }
-        // POST: Valutazione/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            if (_context.Valutazioni == null)
-            {
-                return Problem("Entity set 'AppDbContext.Valutazioni'  is null.");
-            }
-            var valutazione = await _context.Valutazioni.FindAsync(id);
-            if (valutazione != null)
-            {
-                _context.Valutazioni.Remove(valutazione);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var valutazioneList = _unitOfWork.Valutazione.GetAll();
+            return Json(new { data = valutazioneList });
         }
 
-        private bool ValutazioneExists(string id)
+        [HttpDelete]
+        public IActionResult Delete(string idUtente, int? idFilm)
         {
-          return (_context.Valutazioni?.Any(e => e.IdUtente == id)).GetValueOrDefault();
+            var objFromDbFirst = _unitOfWork.Valutazione.GetFirstOrDefault(idFilm, idUtente);
+            if (objFromDbFirst == null)
+                return Json(new { success = false, message = "Error while deleting" });
+            else
+            {
+                _unitOfWork.Valutazione.Remove(objFromDbFirst);
+                _unitOfWork.Save();
+                return Json(new { success = true, message = "Delete Successful" });
+            }
         }
     }
 }
