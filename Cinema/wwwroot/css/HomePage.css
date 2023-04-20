@@ -1,0 +1,42 @@
+﻿h1 {
+    font-family: 'Secular One', sans-serif;
+}
+
+.carousel-control.left.right {
+    top: 33%;
+    color: black;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    background-color: gray;
+    width: 6vh;
+    height: 6vh;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+img.card-img {
+    width:100% !important;
+    height:100% !important;
+    object-fit: cover !important;
+    border: none;
+    border-radius: inherit;
+}
+
+#upcoming {
+    border: none !important;
+    border-color: none !important;
+    display: block;
+    margin: auto;
+}
+
+.card.card-img {
+    /*    height: 690px !important;
+    width: 432px !important;*/
+    border: none !important;
+    border-color: none !important;
+    display: flex;
+    flex-flow: row nowrap;
+}

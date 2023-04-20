@@ -1,10 +1,139 @@
-﻿@{
+﻿@model List<Cinema.Models.VM.HomePageVM>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="">
-    <h1 class="display-4">Welcome</h1>
+
+<div class="text-center my-5">
+    <h1 class="display-6">FILM DELLA SETTIMANA</h1>
+</div>
+<div id="carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        @{
+            List<Cinema.Models.VM.HomePageVM> filmUsciti = new List<Cinema.Models.VM.HomePageVM>();
+            foreach (var item in Model)
+            {
+                if (item.uscito)
+                    filmUsciti.Add(item);
+            }
+            List<Cinema.Models.VM.HomePageVM> filmnonUsciti = new List<Cinema.Models.VM.HomePageVM>();
+            foreach (var item in Model)
+            {
+                if (!item.uscito)
+                    filmnonUsciti.Add(item);
+            }
+            int iterations = (int)Math.Ceiling((double)filmUsciti.Count() / 3);
+            for (int i = 0; i < iterations; i++)
+            {
+                if (i == 0)
+                {
+                    <div class="carousel-item content-row active text-center">
+                        <div class="row">
+                            @for (int j = 0; j < 3; j++)
+                            {
+
+                                <div class="col-sm-4 col d-flex align-items-stretch">
+
+                                    @if ((i * 3) + j < filmUsciti.Count())
+                                    {
+                                            @*<div class="card-img">*@
+                                                <a class="card-img" href="/Admin/Film/Details?id=@filmUsciti.ElementAt((i * 3) + j).idFilm">
+                                                    <img src="@filmUsciti.ElementAt((i * 3) + j).Img" height="100%" width="100%" />
+                                                </a>
+                                            @*</div>*@
+                                        }
+
+
+                                </div>
+
+
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="carousel-item content-row text-center">
+                        <div class="row">
+                            @for (int j = 0; j < 3; j++)
+                            {
+
+                                <div class="col-sm-4 col d-flex align-items-stretch">
+                                    <div class="card border border-0" style="border-color:none">
+                                        @if ((i * 3) + j < filmUsciti.Count())
+                                        {
+                                            @*<div class="card-img">*@
+                                                <a class="card-img" href="/Admin/Film/Details?id=@filmUsciti.ElementAt((i * 3) + j).idFilm">
+                                                    <img  src="@filmUsciti.ElementAt((i * 3) + j).Img" height="100%" width="100%" />
+                                                </a>
+                                            @*</div>*@
+
+                                        }
+                                        else
+                                        {
+                                            <div class="card-immagine" style="visibility:hidden">
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+        <span class="carousel-control left " aria-hidden="true">
+            <i class="bi bi-arrow-left"></i>
+        </span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+        <span class="carousel-control right" aria-hidden="true">
+            <i class="bi bi-arrow-right"></i>
+        </span>
+        <span class="visually-hidden">Next</span>
+    </button>
 </div>
 
-<style>
-</style>
+
+<div class="text-center my-5" id="prossime_uscite">
+    <h1 class="display-6">PROSSIME USCITE</h1>
+</div>
+<ul class="list-group list-group-flush">
+    @foreach (var item in filmnonUsciti)
+    {
+        <li class="list-group-item flex-row my-2">
+            <div class="card col-6" id="upcoming">
+                <div class="row no-gutters">
+                    <div class="col-md-3">
+                        <img src="@item.Img" alt="..." height="99%" width="99%">
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.NomeFilm</h5>
+                            <p>@item.Descrizione</p>
+                            <a href="/Admin/Film/Details?id=@item.idFilm">
+                                <button class="btn btn-primary">
+                                    <div>
+                                        Scopri di più <i class="bi bi-arrow-right-circle"></i>
+                                    </div>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/css/HomePage.css" />
