@@ -8,10 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
 using Cinema.DataAccess.Repository.IRepository;
+using Cinema.Utility;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Cinema.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class PostoController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

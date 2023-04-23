@@ -11,10 +11,14 @@ using Cinema.DataAccess.Repository.IRepository;
 using Cinema.DataAccess.Repository;
 using Microsoft.Extensions.Hosting;
 using Cinema.Models.VM;
+using Cinema.Utility;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Cinema.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class SpettacoloController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

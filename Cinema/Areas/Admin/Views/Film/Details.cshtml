@@ -1,54 +1,117 @@
-@model Cinema.Models.Film
+@model Cinema.Models.VM.FilmVM
 
 @{
     ViewData["Title"] = "Details";
 }
-
-<h1>Details</h1>
-
 <div>
-    <h4>Film</h4>
-    <hr />
+    <div class="row">
+        <h4 class="my-2">
+            @Model.film.Titolo
+            @if (Model.valutazione is double.NaN)
+                Model.valutazione = 0;
+            @for (int i = 0; i < Model.valutazione; i++)
+            {
+                <i id="star" class="bi bi-star-fill color-warning"></i>
+            }
+            @for (int i = 0; i < 5 - Model.valutazione; i++)
+            {
+                <i id="star" class="bi bi-star color-warning"></i>
+            }
+
+        </h4>
+    </div>
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Titolo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Titolo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Durata)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Durata)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Anno)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Anno)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descrizione)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descrizione)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Img)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Img)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdGenereNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdGenereNavigation.Id)
-        </dd>
+        <div class="col-3 leftcolumn">
+            <img src="@Model.film.Img"
+                 width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+        </div>
+        <div class="col-9 rightcolumn">
+            <dt class="col-sm-3">
+                In sala dal
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.film.Anno)
+            </dd>
+            <dt class="col-sm-3">
+                Genere
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.film.IdGenereNavigation.Nome)
+            </dd>
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.film.Durata)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.film.Durata) min
+            </dd>
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.film.Descrizione)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.film.Descrizione)
+            </dd>
+            <dt class="col-sm-3">
+                Programmazione:
+
+            </dt>
+
+            @if (Model.s is null)
+            {
+                <dd class="col-sm-6">
+                    Non ci sono spettacoli in programma per questo film
+                </dd>
+            }
+            else
+            {
+                @foreach (var item in Model.s)
+                    {
+                    <div class="row">
+                        <dd class="col-lg-2 my-1">
+                            @{var array =item.Data.ToString().Split("/");
+                                string dataItem = array[2] + "-" + array[1] + "-" + array[0];
+                            } 
+                                <a href="/User/Prenotazione/Upsert?data=@dataItem&ora=@item.Ora&idSala=@item.IdSala&id=0">
+                                    <div class="container cerchio p-1">
+                                        <h5 id="text" class="text-center">
+                                            @item.Ora
+                                        </h5>
+                                        <p id="text" class="text-center">
+                                            @item.Data
+                                        </p>
+                                    </div>
+                                </a>
+                        </dd>
+                    </div>
+                }
+            }
+
+        </div>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a href="/" class="btn btn-secondary my-2" style="width:150px">
+        Back to List
+    </a>
 </div>
+<style>
+    #star {
+        color: #ffbe0b;
+    }
+    p {
+        margin-bottom: 0px;
+    }
+    #text {
+        color: #023047 !important;
+        
+    }
+    a {
+        text-decoration: none !important;
+    }
+    .cerchio {
+        border-radius: 153px;
+        background: #ffffff;
+        box-shadow: 5px 5px 10px #cccccc, -5px -5px 10px #ffffff;
+        border: 1px solid #023047;
+        margin-left: 0px !important;
+    }
+</style>

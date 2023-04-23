@@ -8,10 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Cinema.DataAccess;
 using Cinema.Models;
 using Cinema.DataAccess.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
+using Cinema.Utility;
 
 namespace Cinema.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles =SD.Role_Admin)]
     public class GenereController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

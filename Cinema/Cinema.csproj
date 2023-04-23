@@ -57,6 +57,8 @@
     <Folder Include="Areas\Admin\Views\Film\" />
     <Folder Include="Areas\Admin\Views\Spettacolo\" />
     <Folder Include="Areas\Admin\Views\Valutazione\" />
+    <Folder Include="Areas\Admin\Views\Prenotazione\" />
+    <Folder Include="Areas\User\Views\Prenotazione\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Areas\" />
@@ -73,5 +75,7 @@
     <None Remove="Areas\Admin\Views\Film\" />
     <None Remove="Areas\Admin\Views\Spettacolo\" />
     <None Remove="Areas\Admin\Views\Valutazione\" />
+    <None Remove="Areas\Admin\Views\Prenotazione\" />
+    <None Remove="Areas\User\Views\Prenotazione\" />
   </ItemGroup>
 </Project>

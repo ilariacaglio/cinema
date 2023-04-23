@@ -35,8 +35,8 @@ public partial class Film
     public virtual Genere IdGenereNavigation { get; set; } = null!;
 
     [ValidateNever]
-    public virtual ICollection<Spettacolo> Spettacolos { get; } = new List<Spettacolo>();
+    public virtual ICollection<Spettacolo> Spettacolos { get; set; } = new List<Spettacolo>();
 
     [ValidateNever]
-    public virtual ICollection<Valutazione> Valutaziones { get; } = new List<Valutazione>();
+    public virtual ICollection<Valutazione> Valutaziones { get; set; } = new List<Valutazione>();
 }

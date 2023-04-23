@@ -9,6 +9,9 @@ using Cinema.DataAccess;
 using Cinema.Models;
 using Cinema.DataAccess.Repository.IRepository;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authorization;
+using Cinema.Models.VM;
+using Cinema.Utility;
 
 namespace Cinema.Controllers
 {
@@ -25,6 +28,7 @@ namespace Cinema.Controllers
         }
 
         // GET: Film
+        [Authorize(Roles =SD.Role_Admin)]
         public IActionResult Index()
         {
             var film = _unitOfWork.Film.GetAll();
@@ -32,6 +36,7 @@ namespace Cinema.Controllers
         }
 
         // GET: Film/Details/5
+        [AllowAnonymous]
         public IActionResult Details(int? id)
         {
             if (id == null || _unitOfWork.Film == null)
@@ -42,11 +47,21 @@ namespace Cinema.Controllers
             if (film == null)
                 return NotFound();
             film.IdGenereNavigation = _unitOfWork.Genere.GetFirstOrDefault(film.IdGenere);
-
-            return View(film);
+            var spettacoli = _unitOfWork.Spettacolo.GetAll().Where(s => s.IdFilm == id);
+            var listaValutazioni = _unitOfWork.Valutazione.GetAll().Where(v => v.IdFilm == id).Select(v => v.Voto);
+            double somma = 0;
+            foreach (var item in listaValutazioni)
+                somma += item;
+            FilmVM f = new FilmVM() {
+                film = film,
+                valutazione = Math.Round(somma/listaValutazioni.Count(),0),
+                s=spettacoli
+            };
+            return View(f);
         }
 
         //GET
+        [Authorize(Roles = SD.Role_Admin)]
         public IActionResult Upsert(int? id)
         {
             Film f = new Film();
@@ -74,6 +89,7 @@ namespace Cinema.Controllers
         //UPSERT
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = SD.Role_Admin)]
         public IActionResult Upsert(Film obj, IFormFile? file)
         {
             if (ModelState.IsValid)

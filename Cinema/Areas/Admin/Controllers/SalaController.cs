@@ -10,10 +10,13 @@ using Cinema.Models;
 using Cinema.Models.VM;
 using Cinema.DataAccess.Repository;
 using Cinema.DataAccess.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
+using Cinema.Utility;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class SalaController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

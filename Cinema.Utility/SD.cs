@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Cinema.DataAccess
+namespace Cinema.Utility
 {
 	public static class SD
 	{
