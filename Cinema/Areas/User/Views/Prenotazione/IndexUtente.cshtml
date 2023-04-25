@@ -8,24 +8,40 @@
     <table class="table table-hover table-sm">
         <thead>
             <tr>
-                <th class="col-4">Film</th>
+                <th class="col-3">Film</th>
                 <th class="col-2">Data</th>
                 <th class="col-2">Ora</th>
-                <th class="col-4"></th>
+                <th class="col-2">Pagato</th>
+                <th class="col-3"></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
-                    <td class="col-4">@item.Spettacolo.IdFilmNavigation.Titolo</td>
+                    <td class="col-3">@item.Spettacolo.IdFilmNavigation.Titolo</td>
                     <td class="col-2">@item.DataS</td>
                     <td class="col-2">@item.OraS</td>
-                    <td class="col-4">
-                        <button class="btn btn-primary mx-1"> Vedi dettagli</button>
-                        <button class="btn btn-info mx-1"> Modifica</button>
+                    @if (item.Pagato)
+                        {
+                        <td class="col-2">Sì</td>
+                        }
+                        else {
+                            <td class="col-2">No</td>
+                        }
+
+
+                <td class="col-3">
+                    <button class="btn btn-primary mx-1"> Vedi dettagli</button>
+                    @if (DateTime.Now <= new DateTime(item.DataS.Year, item.DataS.Month, item.DataS.Day, item.OraS.AddHours(-1).Hour, item.OraS.Minute, 0, DateTimeKind.Local))
+                    {
+
+                        string dataItem = item.DataS.Year + "-" + item.DataS.Month + "-" + item.DataS.Day;
+                        
+                        <a href="/User/Prenotazione/Upsert?data=@dataItem&ora=@item.OraS&idSala=@item.IdSala&id=@item.Id" class="btn btn-info mx-1"> Modifica</a>
                         <button class="btn btn-danger mx-1"> Elimina</button>
-                    </td>
+                    }
+                </td>
                 </tr>
             }
         </tbody>

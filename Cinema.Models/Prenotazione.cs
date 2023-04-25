@@ -22,6 +22,9 @@ public partial class Prenotazione
     [Display(Name = "Utente")]
     public string IdUtente { get; set; } = null!;
 
+    
+    public bool Pagato { get; set; }
+
     [ValidateNever]
     public virtual ICollection<Comprende> Comprendes { get; } = new List<Comprende>();
 

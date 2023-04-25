@@ -32,6 +32,8 @@ public partial class AppDbContext : IdentityDbContext<IdentityUser>
 
     public virtual DbSet<Valutazione> Valutazioni { get; set; }
 
+    public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -123,6 +125,7 @@ public partial class AppDbContext : IdentityDbContext<IdentityUser>
             entity.Property(e => e.IdSala).HasColumnType("int(11)");
             entity.Property(e => e.IdUtente).HasMaxLength(50);
             entity.Property(e => e.OraS).HasColumnType("time");
+            entity.Property(e => e.Pagato).HasColumnType("boolean");
 
             entity.HasOne(d => d.IdUtenteNavigation).WithMany(p => p.Prenotaziones)
                 .HasForeignKey(d => d.IdUtente)

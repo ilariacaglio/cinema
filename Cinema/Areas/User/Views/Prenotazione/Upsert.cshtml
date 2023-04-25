@@ -6,7 +6,6 @@
     {
         numeroPrenotati = Model.Prenotati.Select(p => p.Numero).ToList();
     }
-
 }
 
 <form method="post" asp-area="Admin" asp-action="Upsert" enctype="multipart/form-data">
@@ -17,6 +16,7 @@
     <input asp-for="Selezionati" hidden />
     <input asp-for="fileSala" hidden />
     <input asp-for="postiSala" hidden />
+    <input asp-for="p.Id" hidden />
     <div class="container my-2">
         <h2>Prenota i tuoi posti</h2>
     </div>
@@ -31,7 +31,15 @@
                 int num = c + (f - 1) * (Model.postiSala / Model.fileSala);
                 if (numeroPrenotati.Contains(num))
                 {
-                    <i class="bi bi-person-fill-slash" style="color: #e63946; margin: 1%; "></i>
+                    if (Model.Selezionati.Contains(num.ToString()))
+                    {
+                        <i id=@("postoSemplice"+num.ToString()) class="bi bi-person-fill-check" style="color: #bee9e8; margin: 1%;" onclick="Seleziona(@num)"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-person-fill-slash" style="color: #e63946; margin: 1%; "></i>
+                    }
+
                 }
                 else
                 {
@@ -55,6 +63,7 @@
         background: #0d1b2a;
         padding: 5px;
     }
+
     .schermo {
         border-radius: 105px;
         background: #ffffff;
@@ -64,8 +73,26 @@
 </style>
 <script>
     const numArray = new Array();
+    let test = true;
+
+    function CaricaArray() {
+        var obj = document.querySelectorAll(".bi-person-fill-check");
+        console.log(obj);
+        for (let i = 0; i < obj.length; i++) {
+            var id = parseInt(obj[i].id.replace("postoSemplice", ""))
+            numArray.push(id)
+            console.log(obj[i])
+            console.log(obj[i].id)
+        }
+        console.log(numArray);
+    }
 
     function Seleziona(id) {
+        if (test) {
+            CaricaArray();
+            test = false;
+        }
+
         idDoc = "postoSemplice" + id
         if (document.getElementById(idDoc).classList.contains("bi-person-fill-add")) {
             if (numArray.length < 4) {
@@ -93,5 +120,4 @@
             arr.splice(index, 1);
         }
         return arr;
-    }
-</script>
+    }</script>

@@ -15,7 +15,6 @@ namespace Cinema.DataAccess.Repository
 
         public void Add(Prenotazione entity)
         {
-            //gestisci i 4 posti a utente
             _db.Prenotazioni.Add(entity);
         }
 
@@ -43,8 +42,6 @@ namespace Cinema.DataAccess.Repository
             throw new NotImplementedException();
         }
 
-        //non ci sono campi che ha senso aggiornare
-        //necessaria una nuova prenotazione e la cancellazione della precedente
         public void Update(Prenotazione p)
         {
             throw new NotImplementedException();
