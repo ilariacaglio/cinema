@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Cinema.Utility;
+using Microsoft.Extensions.Hosting;
 
 namespace Cinema.Controllers
 {
@@ -52,8 +53,6 @@ namespace Cinema.Controllers
             return View(prenotazioni);
         }
 
-        // GET: Prenotazione/Details/5
-        [Authorize(Roles = SD.Role_Admin)]
         [Authorize(Roles = SD.Role_User)]
         public IActionResult Details(int? id)
         {
@@ -64,10 +63,26 @@ namespace Cinema.Controllers
             if (prenotazione == null)
                 return NotFound();
 
-            prenotazione.Spettacolo = _unitOfWork.Spettacolo.GetFirstOrDefault(prenotazione.DataS, prenotazione.OraS, prenotazione.IdSala);
-            prenotazione.IdUtenteNavigation = _unitOfWork.Utente.GetFirstOrDefault(prenotazione.IdUtente);
+            PrenotazioneDetailsVM p = new PrenotazioneDetailsVM();
+            p.prenotazione = prenotazione;
+            p.prenotazione.Spettacolo = _unitOfWork.Spettacolo.GetFirstOrDefault(prenotazione.DataS, prenotazione.OraS, prenotazione.IdSala);
 
-            return View(prenotazione);
+            //postiPrenotati
+            var comprende = _unitOfWork.Comprende.GetAll().Where(c => c.IdPrenotazione == id).ToList();
+            foreach (var item in comprende)
+            {
+                var posto = _unitOfWork.Posto.GetFirstOrDefault(item.IdPosto);
+                if (posto is not null)
+                {
+                    p.postiPrenotati.Add(posto);
+                    p.costo += posto.Costo;
+                }
+            }
+
+            //film
+            p.imgFilm = _unitOfWork.Film.GetFirstOrDefault(p.prenotazione.Spettacolo.IdFilm).Img;
+
+            return View(p);
         }
 
         [Authorize(Roles = SD.Role_User)]
@@ -263,21 +278,20 @@ namespace Cinema.Controllers
             return View(prenot);
         }
 
-        // POST: Prenotazione/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+
         public IActionResult Delete(int? id)
         {
-            if (_unitOfWork.Prenotazione == null || id == null)
-                return Problem("Entity set 'AppDbContext.Prenotazioni'  is null.");
-   
-            var prenotazione = _unitOfWork.Prenotazione.GetFirstOrDefault(id);
-
-            if (prenotazione != null)
-                _unitOfWork.Prenotazione.Remove(prenotazione);
-
-            _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
+            var objFromDbFirst = _unitOfWork.Prenotazione.GetFirstOrDefault(id);
+            if (objFromDbFirst == null)
+            {
+                return RedirectToAction(nameof(IndexUtente));
+            }
+            else
+            {
+                _unitOfWork.Prenotazione.Remove(objFromDbFirst);
+                _unitOfWork.Save();
+                return RedirectToAction(nameof(IndexUtente));
+            }
         }
 
         [HttpGet]

@@ -59,6 +59,7 @@
     <Folder Include="Areas\Admin\Views\Valutazione\" />
     <Folder Include="Areas\Admin\Views\Prenotazione\" />
     <Folder Include="Areas\User\Views\Prenotazione\" />
+    <Folder Include="Areas\User\Views\Cart\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Areas\" />
@@ -77,5 +78,6 @@
     <None Remove="Areas\Admin\Views\Valutazione\" />
     <None Remove="Areas\Admin\Views\Prenotazione\" />
     <None Remove="Areas\User\Views\Prenotazione\" />
+    <None Remove="Areas\User\Views\Cart\" />
   </ItemGroup>
 </Project>
