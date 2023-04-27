@@ -2,18 +2,18 @@
 @{
     ViewData["Title"] = "Riepilogo ordine";
 }
-<form method="post">
+<form method="post" class="my-3">
     <br />
     <div class="container">
         <div class="card">
-            <div class="card-header bg-dark text-light ml-0">
-                <div class=" row container">
+            <div class="card-header">
+                <div class=" row ">
                     <div class="col-6">
                         <i class="fa fa-shopping-cart"></i> &nbsp;
-                        Order Summary
+                        Riepilogo dell'ordine
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn btn-outline-info btn-sm">Back to Cart</a>
+                        <a asp-action="Index" class="btn btn-outline-primary btn-sm">Torna al carrello</a>
                     </div>
                 </div>
             </div>
@@ -23,15 +23,34 @@
                         <div class="col-12 col-lg-6 pb-4">
                             <div class="row">
                                 <h4 class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="text-info">Shipping Details:</span>
+                                    <span class="text-info">Dettagli acquirente</span>
                                 </h4>
                             </div>
                             <div class="row my-1">
                                 <div class="col-3">
-                                    <label>Name</label>
+                                    <label>Nome</label>
                                 </div>
                                 <div class="col-9">
-                                    <input class="form-control" />
+                                    <input asp-for="OrderHeader.Name" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Cognome</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="OrderHeader.Utente.Cognome" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.Utente.Cognome" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Mail</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="OrderHeader.Utente.Email" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.Utente.Email" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row my-1">
@@ -39,7 +58,8 @@
                                     <label>Phone</label>
                                 </div>
                                 <div class="col-9">
-                                    <input class="form-control" />
+                                    <input asp-for="OrderHeader.PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row my-1">
@@ -47,52 +67,34 @@
                                     <label>Street Address</label>
                                 </div>
                                 <div class="col-9">
-                                    <input class="form-control" />
-                                </div>
-                            </div>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label>City</label>
-                                </div>
-                                <div class="col-9">
-                                    <input class="form-control" />
-                                </div>
-                            </div>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label>State</label>
-                                </div>
-                                <div class="col-9">
-                                    <input class="form-control" />
-                                </div>
-                            </div>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label>Postal Code</label>
-                                </div>
-                                <div class="col-9">
-                                    <input class="form-control" />
+                                    <input asp-for="OrderHeader.StreetAddress" class="form-control" />
+                                    <span asp-validation-for="OrderHeader.StreetAddress" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-lg-5 offset-lg-1">
                             <h4 class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="text-info">Order Summary:</span>
+                                <span class="text-info">Articoli Selezionati</span>
                             </h4>
                             <ul class="list-group mb-3">
-
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="my-0">Title</h6>
-                                        <small class="text-muted">Quantity: Count</small>
-                                    </div>
-                                    <span class="text-muted">$$$ </span>
-                                </li>
-
-                                <li class="list-group-item d-flex justify-content-between bg-light">
-                                    <small class="text-info">Total (USD)</small>
-                                    <strong class="text-info">$$$</strong>
-                                </li>
+                                @foreach (var details in Model.ListCart)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <div class="d-none d-lg-block col-lg-3 text-center py-2 col-3">
+                                            <img src="@details.dettagliPrenotazione.imgFilm" class="rounded" style="width:100%" />
+                                        </div>
+                                        <div class="col-9 col-lg-6 pt-md-3">
+                                            <h5><strong>@details.prenotazione.DataS</strong> <strong>@details.prenotazione.OraS</strong></h5>
+                                            <p>Sala <small>@details.prenotazione.IdSala</small></p>
+                                            <hr/>
+                                            <span class="text-muted">@details.Price €</span>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between bg-light">
+                                        <small class="text-info">Total (€)</small>
+                                        <strong class="text-info"><h6><strong>@details.Price<span class="text-muted" /></strong></h6></strong>
+                                    </li>
+                                }
                             </ul>
                         </div>
                     </div>
@@ -100,11 +102,8 @@
             </div>
             <div class="card-footer">
                 <div class="row">
-                    <div class="col-12 col-md-8 pt-2">
-                        <p style="color:maroon; font-size:14px;">Estimate Arrival Date: </p>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <button type="submit" value="Place Order" class="btn btn-primary form-control">Place Order</button>
+                    <div class="col-12">
+                        <button type="submit" value="Place Order" class="btn btn-primary form-control" style="display:block;margin:auto">Procedi all'ordine</button>
                     </div>
                 </div>
             </div>

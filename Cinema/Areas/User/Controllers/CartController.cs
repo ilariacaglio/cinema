@@ -89,25 +89,62 @@ namespace Cinema.Areas.User.Controllers
                     dettagliPrenotazione = new PrenotazioneDetailsVM()
                 };
 
-                ////calcola il prezzo totale della prenotazione
-                //var comprende = _unitOfWork.Comprende.GetAll().Where(c => c.IdPrenotazione == prenotazioneId).ToList();
-                //foreach (var item in comprende)
-                //{
-                //    var posto = _unitOfWork.Posto.GetFirstOrDefault(item.IdPosto);
-                //    if (posto is not null)
-                //        s.Price += posto.Costo;
-                //}
-
-                ////immagine del film
-                //s.prenotazione.Spettacolo = _unitOfWork.Spettacolo.GetFirstOrDefault(s.prenotazione.DataS, s.prenotazione.OraS, s.prenotazione.IdSala);
-                //s.dettagliPrenotazione.imgFilm = _unitOfWork.Film.GetFirstOrDefault(s.prenotazione.Spettacolo.IdFilm).Img;
-
                 //aggiunta nel carrello
                 _unitOfWork.ShoppingCart.Add(s);
                 _unitOfWork.Save();
             }
             
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> SummaryAsync()
+        {
+            var userIdentity = User.Identity;
+            string idUtente = await GetCurrentUserId();
+            if (userIdentity != null)
+            {
+                var claimsIdentity = (ClaimsIdentity)userIdentity;
+                var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+                if (claim != null)
+                {
+                    ShoppingCartVM = new ShoppingCartVM()
+                    {
+                        //recupero i dati della ShoppingCart dal database
+                        ListCart = _unitOfWork.ShoppingCart.GetAll().Where(s => s.UtenteId == idUtente).ToList(),
+                        OrderHeader = new()
+                    };
+                    //recupero i dati dell'utente a partire dal suo Id --> claim.value corrisponde all'Id dell'utente in AspNetUsers
+                    ShoppingCartVM.OrderHeader.Utente = _unitOfWork.Utente.GetFirstOrDefault(idUtente)!;
+                    ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.Utente.Nome;
+                    ShoppingCartVM.OrderHeader.PhoneNumber = ShoppingCartVM.OrderHeader.Utente.PhoneNumber ?? string.Empty;
+                    ShoppingCartVM.OrderHeader.StreetAddress = ShoppingCartVM.OrderHeader.Utente.Residenza ?? string.Empty;
+                    //calcolo il totale da mostrare nel summary
+                    foreach (var item in ShoppingCartVM.ListCart)
+                    {
+                        item.prenotazione = _unitOfWork.Prenotazione.GetFirstOrDefault(item.PrenotazioneId);
+                        item.dettagliPrenotazione = new PrenotazioneDetailsVM();
+
+                        //calcola il prezzo di ogni prenotazione
+                        var comprende = _unitOfWork.Comprende.GetAll().Where(c => c.IdPrenotazione == item.PrenotazioneId).ToList();
+                        foreach (var obj in comprende)
+                        {
+                            var posto = _unitOfWork.Posto.GetFirstOrDefault(obj.IdPosto);
+                            if (posto is not null)
+                                item.Price += posto.Costo;
+                        }
+
+                        //immagine del film
+                        item.prenotazione.Spettacolo = _unitOfWork.Spettacolo.GetFirstOrDefault(item.prenotazione.DataS, item.prenotazione.OraS, item.prenotazione.IdSala);
+                        item.dettagliPrenotazione.imgFilm = _unitOfWork.Film.GetFirstOrDefault(item.prenotazione.Spettacolo.IdFilm).Img;
+                    }
+                    foreach (var cart in ShoppingCartVM.ListCart)
+                    {
+                        //calcola il prezzo totale
+                        ShoppingCartVM.OrderHeader.TotaleOrdine += cart.Price;
+                    }
+                }
+            }
+            return View(ShoppingCartVM);
         }
 
         [HttpGet]

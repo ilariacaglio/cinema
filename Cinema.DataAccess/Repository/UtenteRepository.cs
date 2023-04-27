@@ -7,9 +7,11 @@ namespace Cinema.DataAccess.Repository
 {
 	public class UtenteRepository: IRepository<Utente>, IUtenteRepository
     {
-        public UtenteRepository(AppDbContext db) 
-        {
+        private readonly AppDbContext _db;
 
+        public UtenteRepository(AppDbContext db)
+        {
+            _db = db;
         }
 
         public void Add(Utente entity)
@@ -34,7 +36,9 @@ namespace Cinema.DataAccess.Repository
 
         public Utente? GetFirstOrDefault(string? id)
         {
-            throw new NotImplementedException();
+            if (id is null || id.Equals(String.Empty))
+                return null;
+            return _db.Utenti.Single(u => u.Id == id);
         }
 
         public void Remove(Utente entity)
