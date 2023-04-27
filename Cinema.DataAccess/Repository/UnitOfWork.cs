@@ -19,6 +19,8 @@ namespace Cinema.DataAccess.Repository
             Prenotazione = new PrenotazioneRepository(_db);
             Comprende = new ComprendeRepository(_db);
             ShoppingCart = new ShoppingCartRepository(_db);
+            OrderHeader = new OrderHeaderRepository(_db);
+            OrderDetail = new OrderDetailRepository(_db);
         }
 
         public ISalaRepository Sala { get; private set; } = null!;
@@ -31,6 +33,8 @@ namespace Cinema.DataAccess.Repository
         public IPrenotazioneRepository Prenotazione { get; private set; } = null!;
         public IComprendeRepository Comprende { get; private set; } = null!;
         public IShoppingCartRepository ShoppingCart { get; private set; } = null!;
+        public IOrderHeaderRepository OrderHeader { get; private set; } = null!;
+        public IOrderDetailRepository OrderDetail { get; private set; } = null!;
 
         public void Save()
         {

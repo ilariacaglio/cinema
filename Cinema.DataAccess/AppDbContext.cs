@@ -34,6 +34,11 @@ public partial class AppDbContext : IdentityDbContext<IdentityUser>
 
     public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
 
+    public virtual DbSet<OrderHeader> OrderHeaders { get; set; } = null!;
+
+    public virtual DbSet<OrderDetails> OrderDetails { get; set; } = null!;
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -115,7 +120,7 @@ public partial class AppDbContext : IdentityDbContext<IdentityUser>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("Prenotazione");
+            entity.ToTable("Prenotazione", t => t.ExcludeFromMigrations());
 
             entity.HasIndex(e => new { e.DataS, e.OraS, e.IdSala }, "DataS");
 

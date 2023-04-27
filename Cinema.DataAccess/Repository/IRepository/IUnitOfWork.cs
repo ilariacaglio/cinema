@@ -13,6 +13,8 @@ namespace Cinema.DataAccess.Repository.IRepository
 		IPrenotazioneRepository Prenotazione { get; }
 		IComprendeRepository Comprende { get; }
 		IShoppingCartRepository ShoppingCart { get; }
+        IOrderHeaderRepository OrderHeader { get; }
+        IOrderDetailRepository OrderDetail { get; }
         void Save();
 	}
 }

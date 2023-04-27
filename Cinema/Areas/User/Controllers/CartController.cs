@@ -36,12 +36,14 @@ namespace Cinema.Areas.User.Controllers
                 if (claim != null) {
                     ShoppingCartVM = new ShoppingCartVM()
                     {
-                        ListCart = _unitOfWork.ShoppingCart.GetAll().Where(s => s.UtenteId == idUtente).ToList()
+                        ListCart = _unitOfWork.ShoppingCart.GetAll().Where(s => s.UtenteId == idUtente).ToList(),
+                        OrderHeader = new()
                     };
                     foreach (var item in ShoppingCartVM.ListCart)
                     {
                         item.prenotazione = _unitOfWork.Prenotazione.GetFirstOrDefault(item.PrenotazioneId);
                         item.dettagliPrenotazione = new PrenotazioneDetailsVM();
+
                         //calcola il prezzo di ogni prenotazione
                         var comprende = _unitOfWork.Comprende.GetAll().Where(c => c.IdPrenotazione == item.PrenotazioneId).ToList();
                         foreach (var obj in comprende)
@@ -58,7 +60,7 @@ namespace Cinema.Areas.User.Controllers
                     foreach (var cart in ShoppingCartVM.ListCart)
                     {
                         //calcola il prezzo totale
-                        ShoppingCartVM.CartTotal += cart.Price;
+                        ShoppingCartVM.OrderHeader.TotaleOrdine += cart.Price;
                     }
                 }
             }
