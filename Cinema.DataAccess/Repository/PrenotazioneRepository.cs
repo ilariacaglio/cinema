@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Cinema.DataAccess.Repository.IRepository;
 using Cinema.Models;
 
@@ -21,6 +22,11 @@ namespace Cinema.DataAccess.Repository
         public IEnumerable<Prenotazione> GetAll()
         {
             return _db.Prenotazioni.ToList();
+        }
+
+        public IEnumerable<Prenotazione> GetAll(Expression<Func<Prenotazione, bool>>? filter = null, string? includeProperties = null)
+        {
+            throw new NotImplementedException();
         }
 
         public Prenotazione? GetFirstOrDefault(int? id)

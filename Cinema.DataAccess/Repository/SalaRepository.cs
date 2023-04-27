@@ -24,6 +24,11 @@ namespace Cinema.DataAccess.Repository
             return _db.Sale.ToList();
         }
 
+        public IEnumerable<Sala> GetAll(Expression<Func<Sala, bool>>? filter = null, string? includeProperties = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Sala? GetFirstOrDefault(int? id)
         {
             if (id is null)

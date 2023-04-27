@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Cinema.DataAccess.Migrations;
 using Cinema.DataAccess.Repository.IRepository;
 using Cinema.Models;
@@ -22,6 +23,11 @@ namespace Cinema.DataAccess.Repository
         public IEnumerable<Valutazione> GetAll()
         {
             return _db.Valutazioni.ToList();
+        }
+
+        public IEnumerable<Valutazione> GetAll(Expression<Func<Valutazione, bool>>? filter = null, string? includeProperties = null)
+        {
+            throw new NotImplementedException();
         }
 
         public Valutazione? GetFirstOrDefault(int? idFilm, string? idUtente)

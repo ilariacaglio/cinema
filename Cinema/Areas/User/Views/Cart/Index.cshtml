@@ -1,6 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Cinema.Models.VM.ShoppingCartVM
 @{
     ViewData["Title"] = "Carrello";
 }
@@ -16,38 +14,42 @@
                         Il mio carrello
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn btn-outline-primary btn-sm">Prenota ancora</a>
+                        <a asp-area="User" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary btn-sm">Prenota ancora</a>
                     </div>
                 </div>
             </div>
 
             <div class="card-body">
-                <div class="row">
-                    <div class="d-none d-lg-block col-lg-1 text-center py-2">
-                        <img src="img" class="rounded" style="width:100%" />
-                    </div>
-                    <div class="col-12 col-lg-6 pt-md-3">
-                        <h5><strong>Title</strong></h5>
-                        <p><small>Description</small></p>
-                    </div>
-                    <div class="col-12 col-lg-5 text-center row">
-                        <div class="col-6 text-md-right pt-4">
-                            <h6><strong>$Price<span class="text-muted"/></strong></h6>
+                @foreach (var item in Model.ListCart)
+                {
+                    <div class="row">
+                        <div class="d-none d-lg-block col-lg-1 text-center py-2">
+                            <img src="@item.dettagliPrenotazione.imgFilm" class="rounded" style="width:100%" />
                         </div>
-                        <div class="col-6 col-sm-4 col-lg-2 text-right pt-2">
-                            <a class="btn btn-danger">
-                                <i class="bi bi-trash3"></i>
-                            </a>
+                        <div class="col-12 col-lg-6 pt-md-3">
+                            <h5><strong>@item.prenotazione.DataS</strong> <strong>@item.prenotazione.OraS</strong></h5>
+                            <p>Sala <small>@item.prenotazione.IdSala</small></p>
+                        </div>
+                        <div class="col-12 col-lg-5 text-center row">
+                            <div class="col-6 text-md-right pt-4">
+                                <h6><strong>@item.Price<span class="text-muted" /> €</strong></h6>
+                            </div>
+                            <div class="col-6 col-sm-4 col-lg-2 text-right pt-2">
+                                <a asp-action="Remove" asp-route-cartId="@item.Id" class="btn btn-danger"> 
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+
                 <hr />
                 <div class="row">
                     <div class="col-12 col-md-6 offset-md-6 col-lg-4 offset-lg-8 pr-4">
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between bg-light">
                                 <span class="text-info"> Totale (€)</span>
-                                <strong class="text-info">€€€</strong>
+                                <strong class="text-info">@Model.CartTotal</strong>
                             </li>
                         </ul>
                     </div>
@@ -58,7 +60,7 @@
             <div class="card-footer">
                 <div class="row">
                     <div class="col-sm-12 col-lg-4 col-md-6 offset-lg-8 offset-md-6 ">
-                        <a class="btn btn-success form-control">Summary</a>
+                        <a asp-action="Summary" class="btn btn-success form-control">Summary</a>
                     </div>
                 </div>
             </div>

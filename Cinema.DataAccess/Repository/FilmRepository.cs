@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Cinema.DataAccess.Repository.IRepository;
 using Cinema.Models;
 
@@ -19,6 +20,11 @@ namespace Cinema.DataAccess.Repository
         }
 
         public IEnumerable<Film> GetAll()
+        {
+            return _db.Film.ToList();
+        }
+
+        public IEnumerable<Film> GetAll(Expression<Func<Film, bool>>? filter = null, string? includeProperties = null)
         {
             return _db.Film.ToList();
         }

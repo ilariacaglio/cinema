@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Cinema.DataAccess.Repository.IRepository;
 using Cinema.Models;
 
@@ -17,6 +18,11 @@ namespace Cinema.DataAccess.Repository
         }
 
         public IEnumerable<Utente> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Utente> GetAll(Expression<Func<Utente, bool>>? filter = null, string? includeProperties = null)
         {
             throw new NotImplementedException();
         }

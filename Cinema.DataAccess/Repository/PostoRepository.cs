@@ -1,6 +1,7 @@
 ﻿using System;
 using Cinema.Models;
 using Cinema.DataAccess.Repository.IRepository;
+using System.Linq.Expressions;
 
 namespace Cinema.DataAccess.Repository
 {
@@ -27,6 +28,11 @@ namespace Cinema.DataAccess.Repository
         public IEnumerable<Posto> GetAll()
         {
             return _db.Posti.ToList();
+        }
+
+        public IEnumerable<Posto> GetAll(Expression<Func<Posto, bool>>? filter = null, string? includeProperties = null)
+        {
+            throw new NotImplementedException();
         }
 
         public Posto? GetFirstOrDefault(int? id)
