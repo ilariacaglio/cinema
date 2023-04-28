@@ -23,21 +23,19 @@ namespace Cinema.Models
         public DateTime? PaymentDueDate { get; set; }
         public string? SessionId { get; set; }
         public string? PaymentIntentId { get; set; }
-        [Required]
+        
         [DisplayName("Phone Number")]
         [MinLength(5, ErrorMessage = "{0} must be at least {1} digits")]
+        [Required]
         public string PhoneNumber { get; set; } = null!;
         [Required]
         [DisplayName("Street Address")]
         [MinLength(2, ErrorMessage = "{0} must be at least {1} chars")]
         public string StreetAddress { get; set; } = null!;
-        [Required]
         [MinLength(2, ErrorMessage = "{0} must be at least {1} chars")]
         public string City { get; set; } = null!;
-        [Required]
         [MinLength(2, ErrorMessage = "{0} must be at least {1} chars")]
         public string State { get; set; } = null!;
-        [Required]
         [DisplayName("Postal Code")]
         [MinLength(2, ErrorMessage = "{0} must be at least {1} chars")]
         public string PostalCode { get; set; } = null!;

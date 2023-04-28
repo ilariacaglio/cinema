@@ -112,8 +112,19 @@ namespace Cinema.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var spettacoloList = _unitOfWork.Spettacolo.GetAll();
-            return Json(new { data = spettacoloList });
+            List<SpettacoloIndexVM> lista = new List<SpettacoloIndexVM>();
+            var spettacoli = _unitOfWork.Spettacolo.GetAll();
+            foreach (var item in spettacoli)
+            {
+                lista.Add(new SpettacoloIndexVM
+                {
+                    Data = item.Data,
+                    Ora = item.Ora,
+                    salaId = item.IdSala,
+                    Titolo = _unitOfWork.Film.GetFirstOrDefault(item.IdFilm).Titolo
+                });
+            }
+            return Json(new { data = lista });
         }
 
         [HttpDelete]

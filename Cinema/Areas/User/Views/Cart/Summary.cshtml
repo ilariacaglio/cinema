@@ -58,7 +58,7 @@
                                     <label>Phone</label>
                                 </div>
                                 <div class="col-9">
-                                    <input asp-for="OrderHeader.PhoneNumber" class="form-control" />
+                                    <input asp-for="OrderHeader.PhoneNumber" class="form-control" placeholder="Obbligatorio"/>
                                     <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
@@ -86,15 +86,15 @@
                                         <div class="col-9 col-lg-6 pt-md-3">
                                             <h5><strong>@details.prenotazione.DataS</strong> <strong>@details.prenotazione.OraS</strong></h5>
                                             <p>Sala <small>@details.prenotazione.IdSala</small></p>
-                                            <hr/>
+                                            <hr />
                                             <span class="text-muted">@details.Price €</span>
                                         </div>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between bg-light">
-                                        <small class="text-info">Total (€)</small>
-                                        <strong class="text-info"><h6><strong>@details.Price<span class="text-muted" /></strong></h6></strong>
-                                    </li>
                                 }
+                                <li class="list-group-item d-flex justify-content-between bg-light">
+                                    <small class="text-info">Total (€)</small>
+                                    <strong class="text-info"><h6><strong>@Model.OrderHeader.TotaleOrdine<span class="text-muted" /></strong></h6></strong>
+                                </li>
                             </ul>
                         </div>
                     </div>

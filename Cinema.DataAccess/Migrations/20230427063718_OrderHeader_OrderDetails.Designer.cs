@@ -130,7 +130,6 @@ namespace Cinema.DataAccess.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("DataOrdine")
@@ -154,14 +153,12 @@ namespace Cinema.DataAccess.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("PostalCode")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("SessionId")
                         .HasColumnType("longtext");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("StatoOrdine")
