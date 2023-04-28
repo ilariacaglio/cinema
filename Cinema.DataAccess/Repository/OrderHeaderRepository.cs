@@ -12,6 +12,13 @@ namespace Cinema.DataAccess.Repository
             _db = db;
         }
 
+        public OrderHeader? GetFirstOrDefault(int id)
+        {
+            if (id == 0)
+                return null;
+            return _db.OrderHeaders.Single(o => o.Id == id);
+        }
+
         public void Update(OrderHeader orderHeader)
         {
             _db.OrderHeaders.Update(orderHeader);
@@ -27,5 +34,23 @@ namespace Cinema.DataAccess.Repository
                     orderFromDb.StatoPagamento = paymentStatus;
             }
         }
+
+        public void UpdateStripeSessionId(int id, string sessionId)
+        {
+            var orderFromDb = _db.OrderHeaders.FirstOrDefault(u => u.Id == id);
+            if (orderFromDb != null)
+            {
+                orderFromDb.SessionId = sessionId;
+            }
+        }
+        public void UpdateStripePaymentIntentId(int id, string paymentIntentId)
+        {
+            var orderFromDb = _db.OrderHeaders.FirstOrDefault(u => u.Id == id);
+            if (orderFromDb != null)
+            {
+                orderFromDb.PaymentIntentId = paymentIntentId;
+            }
+        }
+
     }
 }

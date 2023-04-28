@@ -50,8 +50,9 @@ namespace Cinema.DataAccess.Repository
 
         public void Update(Prenotazione p)
         {
-            throw new NotImplementedException();
+            var prenotazioneFromDb = GetFirstOrDefault(p.Id);
+            if (prenotazioneFromDb != null)
+                prenotazioneFromDb.Pagato = p.Pagato;
         }
     }
 }
-

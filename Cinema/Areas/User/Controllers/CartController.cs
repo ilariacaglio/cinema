@@ -8,6 +8,8 @@ using Cinema.DataAccess.Repository;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Cinema.Utility;
+using HtmlAgilityPack;
+using Stripe.Checkout;
 
 namespace Cinema.Areas.User.Controllers
 {
@@ -210,9 +212,100 @@ namespace Cinema.Areas.User.Controllers
                         _unitOfWork.OrderDetail.Add(orderDetail);
                         _unitOfWork.Save();
                     }
+
+                    //Stripe checkout
+                    var host = HttpContext.Request.Host.Value;
+                    var scheme = HttpContext.Request.Scheme;
+                    var domain = scheme + Uri.SchemeDelimiter + host + "/";
+
+                    var options = new SessionCreateOptions
+                    {
+                        //LineItems è la lista degli articoli che l'utente sta acquistando
+                        LineItems = new List<SessionLineItemOptions>(),
+                        Mode = "payment",
+                        //se si specifica la modalità di pagamento verranno proposte solo le modalità specificate
+                        //altrimenti verranno proposte tutte le modalità di pagamento previste dal sistema
+                        //Url da richiamare se il pagamento ha avuto esito positivo
+                        SuccessUrl = domain + $"User/Cart/Summary?id={ShoppingCartVM.OrderHeader.Id}",
+                        //url da richiamare se il pagamento viene cancellato
+                        CancelUrl = domain + $"User/Cart/index",
+                    };
+
+                    //configuro gli articoli che verranno pagati su Stripe
+                    foreach (var item in ShoppingCartVM.ListCart)
+                    {
+                        var sessionLineItemOptions = new SessionLineItemOptions
+                        {
+                            PriceData = new SessionLineItemPriceDataOptions
+                            {
+                                //il prezzo deve essere convertito in long dopo essere stato moltiplicato per 100
+                                //ad esempio, 20.5 diventa 2050
+                                UnitAmount = (long)(item.Price * 100),
+                                Currency = "eur",
+                                ProductData = new SessionLineItemPriceDataProductDataOptions
+                                {
+                                    Name = item.PrenotazioneId.ToString(),
+                                },
+                            },
+                            Quantity = 1,
+                        };
+                        options.LineItems.Add(sessionLineItemOptions);
+                    }
+
+                    //creo un SessionService per Stripe
+                    var service = new SessionService();
+                    Session session = service.Create(options);
+                    _unitOfWork.OrderHeader.UpdateStripeSessionId(ShoppingCartVM.OrderHeader.Id, session.Id);
+                    _unitOfWork.Save();
+
+                    //effettuo la chimata a Stripe
+                    Response.Headers.Add("Location", session.Url);
+
+
+                    //metto le prenotazioni a pagato
+                    foreach (var item in ShoppingCartVM.ListCart)
+                    {
+                        var prenotazioneFromDb = _unitOfWork.Prenotazione.GetFirstOrDefault(item.PrenotazioneId);
+                        prenotazioneFromDb.Pagato = true;
+                        _unitOfWork.Prenotazione.Update(prenotazioneFromDb);
+                    }
+
                     //rimuovo gli articoli messi nell'ordine dalla ShoppingCart dell'utente
                     _unitOfWork.ShoppingCart.RemoveRange(ShoppingCartVM.ListCart);
                     _unitOfWork.Save();
+
+                    return new StatusCodeResult(303);
+                    //Fine del checkout su Stripe ****************
+
+                    
+                }
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            OrderHeader? orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(id);
+            if (orderHeader != null)
+            {
+                //recupero la sessione di Stripe creata al checkout
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+                //verifico lo stato del pagamento su Stripe
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    //aggiorno lo stato di pagamento dell'ordine
+                    _unitOfWork.OrderHeader.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
+                    //aggiorno il PaymentIntentId
+                    _unitOfWork.OrderHeader.UpdateStripePaymentIntentId(id, session.PaymentIntentId);
+                    //orderHeader.PaymentIntentId = session.PaymentIntentId;
+
+                    //rimuovo gli articoli dalla ShopingCart dell'utente
+                    List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart.GetAll().Where(u => u.UtenteId == orderHeader.UtenteId).ToList();
+                    _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
+                    //rendo persistenti le modifiche nel database
+                    _unitOfWork.Save();
+                    return View(id);
                 }
             }
             return RedirectToAction("Index", "Home");

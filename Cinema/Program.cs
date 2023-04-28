@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Cinema.Utility;
 using Cinema.Models;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,5 +68,7 @@ app.MapControllerRoute(
             name: "identity",
             pattern: "{area=Identity}/{controller=Account}/{action=Register}/{id?}"
 );
+
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 app.Run();
