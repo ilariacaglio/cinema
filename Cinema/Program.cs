@@ -25,17 +25,24 @@ builder.Services.AddDbContext<AppDbContext>(
 
 builder.Services.AddIdentity<Utente, IdentityRole>(options =>
 {
-    options.User.RequireUniqueEmail = false;
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedAccount = true;
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages();   
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddAuthorization(options => {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
     options.AddPolicy("RequireUserRole", policy => policy.RequireRole("User"));
 });
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = new PathString("/Identity/Account/Login");
+});
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.Configure<EmailSenderOptions>(builder.Configuration.GetSection("EmailSender"));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

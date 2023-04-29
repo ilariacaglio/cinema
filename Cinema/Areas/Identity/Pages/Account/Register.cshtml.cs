@@ -11,6 +11,7 @@ using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using Cinema.DataAccess;
+using Cinema.DataAccess.Repository.IRepository;
 using Cinema.Models;
 using Cinema.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -35,6 +36,7 @@ namespace Cinema.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly AppDbContext _db;
 
         public RegisterModel(
             UserManager<Utente> userManager,
@@ -42,7 +44,8 @@ namespace Cinema.Areas.Identity.Pages.Account
             SignInManager<Utente> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            AppDbContext db)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -51,6 +54,7 @@ namespace Cinema.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _db = db;
         }
 
         /// <summary>
@@ -102,6 +106,12 @@ namespace Cinema.Areas.Identity.Pages.Account
             [DataType(DataType.Text)]
             [Display(Name = "Indirizzo")]
             public string Residenza { get; set; }
+
+            [Required]
+            [DataType(DataType.PhoneNumber)]
+            [Display(Name = "Numero Di telefono")]
+            public string PhoneNumber { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -148,14 +158,7 @@ namespace Cinema.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            Input = new InputModel()
-            {
-                RoleList = _roleManager.Roles.Select(r => r.Name).Select(i => new SelectListItem
-                {
-                    Text = i,
-                    Value = i
-                })
-            };
+            Input = new InputModel(){};
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -171,6 +174,7 @@ namespace Cinema.Areas.Identity.Pages.Account
                 user.Sesso = Input.Sesso;
                 user.Nascita = Input.Nascita;
                 user.Residenza = Input.Residenza;
+                user.PhoneNumber = Input.PhoneNumber;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -180,14 +184,8 @@ namespace Cinema.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    if (Input.Role == null)
-                    {
-                        await _userManager.AddToRoleAsync(user, SD.Role_User);
-                    }
-                    else
-                    {
-                        await _userManager.AddToRoleAsync(user, Input.Role);
-                    }
+                    //l'utente di default è user
+                    await _userManager.AddToRoleAsync(user, SD.Role_User);
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
