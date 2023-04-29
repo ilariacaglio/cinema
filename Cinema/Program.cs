@@ -37,6 +37,12 @@ builder.Services.AddAuthorization(options => {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
     options.AddPolicy("RequireUserRole", policy => policy.RequireRole("User"));
 });
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? string.Empty;
+    googleOptions.AccessDeniedPath = "/Identity/Account/AccessDeniedSocialLogin";
+});
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = new PathString("/Identity/Account/Login");

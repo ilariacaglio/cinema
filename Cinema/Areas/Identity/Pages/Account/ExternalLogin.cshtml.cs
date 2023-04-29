@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Cinema.Models;
+using Cinema.Utility;
 
 namespace Cinema.Areas.Identity.Pages.Account
 {
@@ -85,6 +86,22 @@ namespace Cinema.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+            [Required]
+            public string Nome { get; set; }
+            [Required]
+            public string Cognome { get; set; }
+            [Required]
+            [DataType(DataType.Date)]
+            [Display(Name = "Data di nascita")]
+            public DateOnly Nascita { get; set; }
+            [Required]
+            public string Residenza { get; set; }
+            [Required]
+            public string Sesso { get; set; }
+            [Required]
+            [DataType(DataType.PhoneNumber)]
+            [Display(Name = "Numero Di telefono")]
+            public string PhoneNumber { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -135,6 +152,10 @@ namespace Cinema.Areas.Identity.Pages.Account
                         Email = info.Principal.FindFirstValue(ClaimTypes.Email)
                     };
                 }
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Name))
+                {
+                    Input.Nome = info.Principal.FindFirstValue(ClaimTypes.Name);
+                }
                 return Page();
             }
         }
@@ -156,10 +177,17 @@ namespace Cinema.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.Residenza = Input.Residenza;
+                user.Nome = Input.Nome;
+                user.Cognome = Input.Cognome;
+                user.Sesso = Input.Sesso;
+                user.Nascita = Input.Nascita;
+                user.PhoneNumber = Input.PhoneNumber;
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, SD.Role_User);
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
