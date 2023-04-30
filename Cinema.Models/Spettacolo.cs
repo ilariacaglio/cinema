@@ -28,5 +28,5 @@ public partial class Spettacolo
     public virtual Sala IdSalaNavigation { get; set; } = null!;
 
     [ValidateNever]
-    public virtual ICollection<Prenotazione> Prenotaziones { get; } = new List<Prenotazione>();
+    public virtual ICollection<Prenotazione> Prenotaziones { get; set; } = new List<Prenotazione>();
 }

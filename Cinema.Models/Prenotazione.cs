@@ -25,7 +25,7 @@ public partial class Prenotazione
     public bool Pagato { get; set; }
 
     [ValidateNever]
-    public virtual ICollection<Comprende> Comprendes { get; } = new List<Comprende>();
+    public virtual ICollection<Comprende> Comprendes { get; set; } = new List<Comprende>();
 
     [ValidateNever]
     public virtual Utente IdUtenteNavigation { get; set; } = null!;
