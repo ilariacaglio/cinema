@@ -30,13 +30,9 @@ namespace Cinema.Controllers
             _userManager = userManager;
         }
 
-        [Area("Admin")]
-        // GET: Prenotazione
         [Authorize(Roles = SD.Role_Admin)]
-        public IActionResult Index()
-        {
-            var prenotazioni = _unitOfWork.Prenotazione.GetAll();
-            return View(prenotazioni);
+        public IActionResult Index() {
+            return View();
         }
 
         // GET: Prenotazione
@@ -212,9 +208,6 @@ namespace Cinema.Controllers
                         });
                         _unitOfWork.Save();
                     }
-
-                    //add to cart
-                    //da implementare
                 }
                 else
                 {
@@ -267,8 +260,6 @@ namespace Cinema.Controllers
                             });
                             _unitOfWork.Save();
                         }
-
-                        //ritoni i details (todo)
                     }
                     return RedirectToAction(nameof(IndexUtente));
                 }
@@ -277,7 +268,6 @@ namespace Cinema.Controllers
             }
             return View(prenot);
         }
-
 
         public IActionResult Delete(int? id)
         {
@@ -291,6 +281,67 @@ namespace Cinema.Controllers
                 _unitOfWork.Prenotazione.Remove(objFromDbFirst);
                 _unitOfWork.Save();
                 return RedirectToAction(nameof(IndexUtente));
+            }
+        }
+
+        public IActionResult Edit(int prenotazioneId) {
+            var prenotazione = _unitOfWork.Prenotazione.GetFirstOrDefault(prenotazioneId);
+            if (prenotazione != null)
+            {
+                if (prenotazione.Pagato)
+                    prenotazione.Pagato = false;
+                else
+                    prenotazione.Pagato = true;
+                _unitOfWork.Prenotazione.Update(prenotazione);
+                _unitOfWork.Save();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Prenotazione
+        [Authorize(Roles = SD.Role_Admin)]
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<PrenotazioneIndexVM> lista = new List<PrenotazioneIndexVM>();
+            var prenotazioni = _unitOfWork.Prenotazione.GetAll();
+            foreach (var item in prenotazioni)
+            {
+                //ricerca spettacolo
+                var spettacolo = _unitOfWork.Spettacolo.GetFirstOrDefault(item.DataS, item.OraS, item.IdSala);
+
+                //calcolo prezzo
+                var comprende = _unitOfWork.Comprende.GetAll().Where(c => c.IdPrenotazione == item.Id).ToList();
+                double prezzo = 0;
+                foreach (var obj in comprende)
+                    prezzo += _unitOfWork.Posto.GetFirstOrDefault(obj.IdPosto).Costo;
+
+                lista.Add(new PrenotazioneIndexVM()
+                {
+                    id = item.Id,
+                    dataS = item.DataS,
+                    oraS = item.OraS,
+                    idSala = item.IdSala,
+                    pagato = item.Pagato,
+                    emailUtente = _unitOfWork.Utente.GetFirstOrDefault(item.IdUtente).Email,
+                    titoloFilm = _unitOfWork.Film.GetFirstOrDefault(spettacolo.IdFilm).Titolo,
+                    prezzoTot = prezzo
+                });
+            }
+            return Json(new { data = lista });
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            var objFromDbFirst = _unitOfWork.Prenotazione.GetFirstOrDefault(id);
+            if (objFromDbFirst == null)
+                return Json(new { success = false, message = "Error while deleting" });
+            else
+            {
+                _unitOfWork.Prenotazione.Remove(objFromDbFirst);
+                _unitOfWork.Save();
+                return Json(new { success = true, message = "Delete Successful" });
             }
         }
 

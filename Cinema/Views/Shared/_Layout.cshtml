@@ -31,8 +31,11 @@
                         @if (User.IsInRole(SD.Role_Admin))
                         {
                             <li class="nav-item dropdown ">
+                                <a class="nav-link text-dark" asp-area="User" asp-controller="Prenotazione" asp-action="Index">Prenotazioni</a>
+                            </li>
+                            <li class="nav-item dropdown ">
                                 <a class="dropdown-toggle nav-link text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Raccolta Contenuti
+                                    Gestione Contenuti
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark">
                                     <li class="dropdown-item">
@@ -52,9 +55,35 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="nav-item dropdown ">
+                                <a class="dropdown-toggle nav-link text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Statistiche
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Sala" asp-action="Index">Sala</a>
+                                    </li>
+                                </ul>
+                            </li>
                         }
                         @if (User.IsInRole(SD.Role_User))
                         {
+                            <li class="nav-item dropdown ">
+                                <a class="dropdown-toggle nav-link text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                                    La mia attività
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="User" asp-controller="Prenotazione" asp-action="IndexUtente">Prenotazioni</a>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="User" asp-controller="Utente" asp-action="FilmUtente">Film che ho visto</a>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="User" asp-controller="Valutazione" asp-action="Index">Valutazioni</a>
+                                    </li>
+                                </ul>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="User" asp-controller="Cart" asp-action="Index">
                                     <i class="bi bi-cart"></i>
@@ -85,6 +114,8 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/sweetalert2/dist/sweetalert2.all.js"></script>
     <script src="https://cdn.datatables.net/v/bs5/dt-1.13.4/b-2.3.6/r-2.4.1/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

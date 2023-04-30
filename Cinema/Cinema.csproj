@@ -60,10 +60,11 @@
     <Folder Include="wwwroot\images\film\" />
     <Folder Include="Areas\Admin\Views\Film\" />
     <Folder Include="Areas\Admin\Views\Spettacolo\" />
-    <Folder Include="Areas\Admin\Views\Valutazione\" />
-    <Folder Include="Areas\Admin\Views\Prenotazione\" />
     <Folder Include="Areas\User\Views\Prenotazione\" />
     <Folder Include="Areas\User\Views\Cart\" />
+    <Folder Include="Areas\User\Views\Valutazione\" />
+    <Folder Include="Areas\User\Views\Utente\" />
+    <Folder Include="Areas\Admin\Views\Statistiche\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Areas\" />
@@ -79,9 +80,10 @@
     <None Remove="Areas\Admin\Views\Genere\" />
     <None Remove="Areas\Admin\Views\Film\" />
     <None Remove="Areas\Admin\Views\Spettacolo\" />
-    <None Remove="Areas\Admin\Views\Valutazione\" />
-    <None Remove="Areas\Admin\Views\Prenotazione\" />
     <None Remove="Areas\User\Views\Prenotazione\" />
     <None Remove="Areas\User\Views\Cart\" />
+    <None Remove="Areas\User\Views\Valutazione\" />
+    <None Remove="Areas\User\Views\Utente\" />
+    <None Remove="Areas\Admin\Views\Statistiche\" />
   </ItemGroup>
 </Project>

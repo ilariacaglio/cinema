@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Cinema.Utility;
 using Cinema.Models;
 using Stripe;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles); ;
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var serverVersion = ServerVersion.AutoDetect(connectionString);
@@ -46,6 +48,7 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = new PathString("/Identity/Account/Login");
+    options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
 });
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 builder.Services.Configure<EmailSenderOptions>(builder.Configuration.GetSection("EmailSender"));

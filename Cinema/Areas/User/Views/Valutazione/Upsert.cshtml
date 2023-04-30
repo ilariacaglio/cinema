@@ -1,0 +1,35 @@
+﻿@model Cinema.Models.Valutazione
+
+@{
+    ViewData["Title"] = "Upsert Valutazione";
+}
+
+<h2>Valuta la tua esperienza</h2>
+<hr />
+
+<form asp-action="Upsert" asp-controller="Valutazione">
+    <div class="row">
+        <input  asp-for="IdFilm" hidden/>
+        <input asp-for="IdUtente" hidden/>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Voto">Su una scala da 1 a 5, come valuteresti il film?</label>
+            <input type="number" asp-for="Voto" class="form-control" />
+            <span asp-validation-for="Voto" class="text-danger"></span>
+        </div>
+        <div class="form-group my-2">
+            <input type="submit" value="Conferma" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+<div>
+    <a asp-action="FilmUtente" asp-controller="Utente">Back to List</a>
+</div>
+<style>
+    i {
+        height: 25px !important;
+        width: 25px !important;
+        color: #ffb703;
+    }
+</style>
+@section Scripts {@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}}
