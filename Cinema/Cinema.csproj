@@ -65,6 +65,7 @@
     <Folder Include="Areas\User\Views\Valutazione\" />
     <Folder Include="Areas\User\Views\Utente\" />
     <Folder Include="Areas\Admin\Views\Statistiche\" />
+    <Folder Include="Areas\Admin\Views\UtenteManagement\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Areas\" />
@@ -85,5 +86,6 @@
     <None Remove="Areas\User\Views\Valutazione\" />
     <None Remove="Areas\User\Views\Utente\" />
     <None Remove="Areas\Admin\Views\Statistiche\" />
+    <None Remove="Areas\Admin\Views\UtenteManagement\" />
   </ItemGroup>
 </Project>
