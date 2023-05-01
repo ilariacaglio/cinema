@@ -1,6 +1,6 @@
 ﻿const ctx = document.getElementById('myChart');
 var myChart = null;
-let url = "https://localhost:7214/Admin/Statistiche/JsonIncassiGiornalieri?data=2023-04-30"
+let url = "https://localhost:7214/Admin/Statistiche/JsonIncassiGiornalieri?data="
 
 document.addEventListener("load", CaricaDati());
 

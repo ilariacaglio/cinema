@@ -106,11 +106,64 @@ public class HomeController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [AllowAnonymous]
+    public IActionResult Programmazione() {
+        return View();
+    }
 
     public IActionResult Privacy()
     {
         return View();
     }
+
+    [HttpGet]
+    public IActionResult ProgrammazioneGet()
+    {
+        List<ProgrammazioneVM> lista = new List<ProgrammazioneVM>();
+
+        //trova tutti i film
+        var listaFilm = unitOfWork.Film.GetAll();
+        foreach (var item in listaFilm)
+        {
+            var genere = unitOfWork.Genere.GetFirstOrDefault(item.IdGenere);
+            lista.Add(new ProgrammazioneVM()
+            {
+                IdFilm = item.Id,
+                TitoloFilm = item.Titolo,
+                Genere = genere.Nome
+            }) ;
+        }
+
+        //trova le date degli spettacoli
+        foreach (var item in lista)
+        {
+            //date degli spettacoli
+            var spettacoli = unitOfWork.Spettacolo.GetAll().Where(s => s.IdFilm == item.IdFilm).ToList();
+
+            if (spettacoli.Count() != 0)
+            {
+                if (spettacoli.Count() == 1)
+                {
+                    item.DataInizio = spettacoli.FirstOrDefault().Data;
+                    item.DataFine = item.DataInizio;
+                }
+                else
+                {
+                    //ordina elementi
+                    spettacoli.Sort((s1, s2) => s1.Data.CompareTo(s2.Data));
+
+                    //prendi il primo
+                    item.DataInizio = spettacoli.FirstOrDefault().Data;
+
+                    //prendi l'ultimo
+                    item.DataFine = spettacoli.LastOrDefault().Data;
+                }
+            }
+        }
+
+        return Json(new { data = lista });
+    }
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
