@@ -13,10 +13,24 @@
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
+    overflow-x: hidden;
 }
 
 body {
-  margin-bottom: 60px;
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 100px;
+}
+
+.footer {
+    bottom: 0 !important;
+    position: fixed !important;
+    z-index:100;
+}
+
+.main-content {
+    min-height: 100%;
+    height: 100%;
 }

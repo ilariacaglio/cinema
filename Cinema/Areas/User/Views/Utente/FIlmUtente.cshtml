@@ -1,0 +1,36 @@
+﻿@model HashSet<Film>
+@{
+    ViewData["Title"] = "Film che ho visto";
+}
+
+<div class="row">
+    <h2 class="col-12 mb-3">I film che ho visto</h2>
+        @foreach (var item in Model)
+        {
+                <div class="card col-6" id="upcoming" >
+                    <div class="row no-gutters">
+                        <div class="col-md-3">
+                            <img src="@item.Img" alt="..." height="99%" width="99%">
+                        </div>
+                        <div class="col-md-9">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.Titolo</h5>
+                                <p>@item.Descrizione</p>
+                                <a href="/User/Valutazione/Upsert?idFilm=@item.Id">
+                                    <button class="btn btn-primary" >
+                                        <div>
+                                            Valuta <i class="bi bi-chevron-double-right"></i>
+                                        </div>
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        }
+</div>
+<style>
+    .card {
+        border: none !important;
+    }
+</style>

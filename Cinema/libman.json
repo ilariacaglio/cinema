@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap@5.2.3",
+      "destination": "wwwroot/lib/bootstrap/dist/",
+      "files": [
+        "css/*",
+        "js/*"
+      ]
+    },
+    {
+      "library": "sweetalert2@11.7.2",
+      "destination": "wwwroot/lib/sweetalert2/dist/"
+    }
+  ]
+}

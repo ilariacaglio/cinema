@@ -1,0 +1,122 @@
+﻿@model Cinema.Models.Film
+@{
+    ViewData["Title"] = "Upsert";
+}
+<form method="post" asp-area="Admin" asp-action="Upsert" enctype="multipart/form-data">
+    <input asp-for="Id" hidden />
+    <div class="col-12">
+        <div class="p-3 mt-4 row">
+            <div class="col-12 pb-2">
+                <h2 class="text-primary">@(Model.Id!=0? "Modifica un":"Crea un nuovo") Film</h2>
+                <hr />
+            </div>
+            @if (Model.Id == 0)
+            {
+                <div class="col-6">
+                    <label asp-for="Titolo"></label>
+                    <input type="text" asp-for="Titolo" class="form-control" />
+                    <span asp-validation-for="Titolo" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="Durata"></label>
+                    <input type="number" asp-for="Durata" class="form-control" />
+                    <span asp-validation-for="Durata" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="Anno"></label>
+                    <input type="date" asp-for="Anno" class="form-control" />
+                    <span asp-validation-for="Anno" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <label asp-for="IdGenere"></label>
+                    <select asp-for="IdGenere" class="form-control" asp-items="ViewBag.Genere"></select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Descrizione"></label>
+                    <textarea asp-for="Descrizione" rows="3" class="form-control"></textarea>
+                    <span asp-validation-for="Descrizione" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Img"></label>
+                    <input type="file" id="uploadBox" name="file" class="form-control" />
+                </div>
+            }
+            else
+            {
+                <input asp-for="Img" hidden />
+                <div class="col-3 leftcolumn">
+                    <img src="@Model.Img"
+                         width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+                </div>
+                <div class="col-9 rightcolumn">
+                    <div class="col">
+                        <label asp-for="Titolo"></label>
+                        <input type="text" asp-for="Titolo" class="form-control" />
+                        <span asp-validation-for="Titolo" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="Durata"></label>
+                        <input type="number" asp-for="Durata" class="form-control" />
+                        <span asp-validation-for="Durata" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="Anno"></label>
+                        <input type="year" asp-for="Anno" class="form-control" />
+                        <span asp-validation-for="Anno" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="IdGenere"></label>
+                        <select asp-for="IdGenere" class="form-control" asp-items="ViewBag.Genere"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Descrizione"></label>
+                        <textarea asp-for="Descrizione" rows="3" class="form-control"></textarea>
+                        <span asp-validation-for="Descrizione" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Img"></label>
+                        <input type="file" id="uploadBox" name="file" class="form-control" />
+                    </div>
+                </div>
+            }
+            <div class="col-12 my-2">
+                @if (Model.Id != 0)
+                {
+                    <button type="submit" asp-controller="Film" asp-action="Upsert" class="btn btn-primary" style="width:150px">Update</button>
+                }
+                else
+                {
+                    <button type="submit" asp-controller="Film" asp-action="Upsert" onclick="return ValidateInput()" class="btn btn-primary" style="width:150px">Create</button>
+                }
+                <a asp-controller="Film" asp-action="Index" class="btn btn-secondary" style="width:150px">
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>  
+    
+</form>
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+            toolbar_mode: 'floating',
+        });
+        function ValidateInput() {
+            if (document.getElementById("uploadBox").value == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Inserire un immagine!',
+                });
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

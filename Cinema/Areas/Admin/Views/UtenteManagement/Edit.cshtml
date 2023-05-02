@@ -1,0 +1,31 @@
+﻿@model Cinema.Models.VM.UtenteVM
+@{
+    ViewData["Title"] = "Modifica ruolo";
+}
+<form method="post" asp-area="Admin" asp-action="Edit" enctype="multipart/form-data">
+    <input asp-for="user.Id" hidden />
+    <div class="col-12">
+        <div class="p-3 mt-4 row">
+            <div class="col-12 pb-2">
+                <h2 class="text-primary">Modifica un ruolo</h2>
+                <hr/>
+                <p>Modifica il ruolo per @Model.user.Email</p>
+            </div>
+            <div class="col-12 my-2">
+                <label asp-for="ruolo">Ruolo</label>
+                <select asp-for="ruolo" class="form-control w-50" asp-items="@Model.ruoli"></select>
+            </div>
+            <div class="col-12">
+                <button type="submit" asp-controller="UtenteManagement" asp-action="Edit" class="btn btn-primary" style="width:150px">Conferma</button>
+                <a asp-controller="UtenteManagement" asp-action="Edit" class="btn btn-secondary" style="width:150px">
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

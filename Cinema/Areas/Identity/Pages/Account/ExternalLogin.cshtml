@@ -1,0 +1,83 @@
+﻿@page
+@model ExternalLoginModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container classe1 my-5">
+    <h2>Registrati</h2>
+    <h4 id="external-login-title">Associa il tuo account @Model.ProviderDisplayName</h4>
+    <hr />
+
+    <p id="external-login-description" class="text-info">
+        L'autenticazione con @Model.ProviderDisplayName è avvenuta con successo. Inserire un indirizzo e-mail per questo sito e fare clic sul pulsante Registra per completare l'accesso.
+    </p>
+
+    <div class="row">
+            <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email." />
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3 py-2">
+                    <input asp-for="Input.Nome" class="form-control" aria-required="true" placeholder="Nome Cognome" />
+                    <label asp-for="Input.Nome">Nome</label>
+                    <span asp-validation-for="Input.Nome" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3 py-2">
+                    <input asp-for="Input.Cognome" class="form-control" aria-required="true" placeholder="Nome Cognome" />
+                    <label asp-for="Input.Cognome">Cognome</label>
+                    <span asp-validation-for="Input.Cognome" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3 py-2">
+                    <input asp-for="Input.Nascita" class="form-control" aria-required="true" placeholder="Nome Cognome" />
+                    <label asp-for="Input.Nascita">Data di nascita</label>
+                    <span asp-validation-for="Input.Nascita" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3 py-2">
+                    <input asp-for="Input.Residenza" class="form-control" aria-required="true" placeholder="Nome Cognome" />
+                    <label asp-for="Input.Residenza">Indirizzo</label>
+                    <span asp-validation-for="Input.Residenza" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3 py-2">
+                    <input asp-for="Input.Sesso" class="form-control" aria-required="true" placeholder="Nome Cognome" />
+                    <label asp-for="Input.Sesso">Genere</label>
+                    <span asp-validation-for="Input.Sesso" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3 py-2">
+                    <input asp-for="Input.PhoneNumber" class="form-control" aria-required="true" />
+                    <label asp-for="Input.PhoneNumber">Phone Number</label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+                <button type="submit" class="w-100 btn btn-primary">Register</button>
+
+            </form>
+     </div>
+</div>
+<style>
+    .classe1 {
+        border-radius: 34px;
+        background: #edf2f4;
+        box-shadow: 20px 20px 100px #9da8bc, -20px -20px 100px #ffffff;
+        padding: 30px;
+        width: 50%;
+        display: block;
+        margin: auto;
+    }
+
+    .dropdown-menu {
+        width: max-content;
+        background-color: #edf2f4;
+        padding: 10px;
+    }
+
+    a {
+        color: #f72585;
+        text-decoration: none;
+    }
+</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

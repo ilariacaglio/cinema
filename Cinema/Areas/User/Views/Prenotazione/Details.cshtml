@@ -1,0 +1,66 @@
+﻿@model Cinema.Models.VM.PrenotazioneDetailsVM
+@{
+    ViewData["Title"] = "Dettagli Prenotazione";
+}
+
+<div>
+    <div class="row">
+        <h4 class="my-2">
+            La mia prenotazione
+        </h4>
+    </div>
+    <dl class="row">
+        <div class="col-3 leftcolumn">
+            <img src="@Model.imgFilm"
+                 width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+        </div>
+        <div class="col-9 rightcolumn">
+            <dt class="col-sm-3">
+                Identificativo Prenotazione:
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.prenotazione.Id)
+                @Html.DisplayFor(model => model.prenotazione.IdUtente)
+            </dd>
+            <dt class="col-sm-3">
+                Quando?
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.prenotazione.DataS)
+                @Html.DisplayFor(model => model.prenotazione.OraS)
+            </dd>
+            <dt class="col-sm-3">
+                Sala
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.prenotazione.IdSala)
+            </dd>
+            <dt class="col-sm-3">
+                Posti Prenotati:
+            </dt>
+            <dt class="col-sm-3">
+                Numero e fila
+            </dt>
+
+            @for (int i = 0; i < Model.postiPrenotati.Count(); i++)
+            {
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.postiPrenotati.ElementAt(i).Numero)&#8192;&#8192;&#8192;&#8192;&#8192;&#8192;
+                    @Html.DisplayFor(model => model.postiPrenotati.ElementAt(i).Fila)
+                </dd>
+            }
+
+            <dt class="col-sm-3">
+                Totale:
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.costo) €
+            </dd>
+        </div>
+    </dl>
+</div>
+<div>
+    <a href="/User/Prenotazione/IndexUtente" class="btn btn-secondary my-2" style="width:150px">
+        Back to List
+    </a>
+</div>

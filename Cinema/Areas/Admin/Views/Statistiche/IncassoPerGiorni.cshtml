@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Incasso per giorni";
+}
+<div class="row">
+    <h2>Incasso per giorni</h2>
+</div>
+<br />
+
+<div class="row">
+    <div class="col-4 leftcolum">
+        <label>Inserisci la data di inizio:</label>
+        <input id="dataValueInizio" type="date" placeholder="@DateTime.Today.Date" class="form-control w-100" />
+        <label>Inserisci la data di fine:</label>
+        <input id="dataValueFine" type="date" placeholder="@DateTime.Today.Date" class="form-control w-100" />
+        <button onclick="Grafico()" class="btn btn-primary mt-1">Cerca</button>
+    </div>
+    <div class="col-8 rightcolumn">
+        <div style="display:block;margin:auto">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/IncassoPerGiorni.js"></script>

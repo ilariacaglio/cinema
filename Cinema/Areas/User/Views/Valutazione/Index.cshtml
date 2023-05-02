@@ -1,0 +1,48 @@
+@model IEnumerable<Cinema.Models.Valutazione>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>I film che ho valutato:</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Film
+            </th>
+            <th>
+                Voto
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdFilmNavigation.Titolo)
+            </td>
+            <td>
+                @for (int i = 0; i < int.Parse(item.Voto.ToString()); i++)
+                {
+                    <i id="star" class="bi bi-star-fill"></i>
+                }
+                @for (int i = 0; i < 5 - int.Parse(item.Voto.ToString()); i++)
+                {
+                    <i id="star" class="bi bi-star"></i>
+                }
+            </td>
+            <td>
+                <a href="/User/Valutazione/Upsert?idFilm=@item.IdFilm" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Modifica</a>
+                <a href="/User/Valutazione/Delete?idFilm=@item.IdFilm" class="btn btn-danger"><i class="bi bi-trash3"></i> Elimina</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<style>
+    #star {
+        color: #ffb703;
+    }
+</style>
