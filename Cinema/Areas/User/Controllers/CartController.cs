@@ -71,13 +71,16 @@ namespace Cinema.Areas.User.Controllers
             return View(ShoppingCartVM);
         }
 
-        public IActionResult Remove(int cartId)
+        public async Task<IActionResult> Remove(int cartId)
         {
+            string utenteId = await GetCurrentUserId();
             var cart = _unitOfWork.ShoppingCart.GetFirst(cartId);
             if (cart != null)
             {
                 _unitOfWork.ShoppingCart.Remove(cart);
                 _unitOfWork.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                            _unitOfWork.ShoppingCart.GetAll().Where(u => u.UtenteId == utenteId).Count());
             }
             return RedirectToAction(nameof(Index));
         }
@@ -94,13 +97,15 @@ namespace Cinema.Areas.User.Controllers
                 };
 
                 //verifica che la prenotazione non sia già nel carrello
-                var listaCart = _unitOfWork.ShoppingCart.GetAll().Where(s => s.PrenotazioneId == prenotazioneId && s.UtenteId == s.UtenteId).ToList();
+                var listaCart = _unitOfWork.ShoppingCart.GetAll().Where(c => c.PrenotazioneId == prenotazioneId && c.UtenteId == s.UtenteId).ToList();
 
                 if (listaCart.Count() == 0)
                 {
                     //aggiunta nel carrello
                     _unitOfWork.ShoppingCart.Add(s);
                     _unitOfWork.Save();
+                    HttpContext.Session.SetInt32(SD.SessionCart,
+                            _unitOfWork.ShoppingCart.GetAll().Where(u => u.UtenteId == s.UtenteId).Count());
                 }
             }
             
@@ -280,6 +285,8 @@ namespace Cinema.Areas.User.Controllers
                     _unitOfWork.ShoppingCart.RemoveRange(ShoppingCartVM.ListCart);
                     _unitOfWork.Save();
 
+                    HttpContext.Session.SetInt32(SD.SessionCart, 0);
+
                     return new StatusCodeResult(303);
                     //Fine del checkout su Stripe ****************
 
@@ -311,6 +318,7 @@ namespace Cinema.Areas.User.Controllers
                     _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
                     //rendo persistenti le modifiche nel database
                     _unitOfWork.Save();
+                   
                     return View(id);
                 }
             }

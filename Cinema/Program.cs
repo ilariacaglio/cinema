@@ -58,6 +58,14 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 builder.Services.Configure<EmailSenderOptions>(builder.Configuration.GetSection("EmailSender"));
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.IdleTimeout = TimeSpan.FromMinutes(100);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -91,6 +99,7 @@ app.MapControllerRoute(
             pattern: "{area=Identity}/{controller=Account}/{action=Register}/{id?}"
 );
 
+app.UseSession();
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 app.Run();

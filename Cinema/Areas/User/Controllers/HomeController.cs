@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using Cinema.DataAccess.Repository;
 using System.Security.Claims;
+using Cinema.Utility;
 
 namespace Cinema.Controllers;
 [Area("User")]
@@ -103,8 +104,8 @@ public class HomeController : Controller
                     {
                         //salvo shoppingCart: ha valori per ProductId, ApplicationUserId e Count. L'Id verrà definito dal database
                         unitOfWork.ShoppingCart.Add(shoppingCart);
+                        unitOfWork.Save();
                     }
-                    unitOfWork.Save();
                     RedirectToAction(nameof(Index));
                 }
             }
