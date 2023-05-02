@@ -34,6 +34,11 @@ namespace Cinema.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult PrenotazioniPerSala()
+        {
+            return View();
+        }
+
         [HttpGet]
         public IActionResult JsonIncassiGiornalieri(DateOnly data)
         {
@@ -59,6 +64,27 @@ namespace Cinema.Areas.Admin.Controllers
                 listaGiorni.Add(_object);
             }
             return Json(new { data = listaGiorni });
+        }
+
+        [HttpGet]
+        public IActionResult JsonPrenotazioniPerSala() {
+            List<PrenotazioniPerSalaVM> lista = new List<PrenotazioniPerSalaVM>();
+
+            //sale esistenti
+            var sale = _unitOfWork.Sala.GetAll();
+
+            foreach (var item in sale)
+            {
+                //prendi le prenotazioni per quella sala
+                var prenotazioni = _unitOfWork.Prenotazione.GetAll().Where(p => p.IdSala == item.Id).ToList();
+                lista.Add(new PrenotazioniPerSalaVM()
+                {
+                    IdSala = item.Id,
+                    NumeroPrenotazioni = prenotazioni.Count()
+                });
+            }
+
+            return Json(new { data = lista });
         }
 
         private List<IncassiGiornalieriVM> CalcoloGuadagni(DateOnly data) {
