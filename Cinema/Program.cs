@@ -8,6 +8,7 @@ using Cinema.Utility;
 using Cinema.Models;
 using Stripe;
 using System.Text.Json.Serialization;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,11 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
     googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? string.Empty;
     googleOptions.AccessDeniedPath = "/Identity/Account/AccessDeniedSocialLogin";
+}).AddMicrosoftAccount(microsoftOptions =>
+{
+    microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? string.Empty;
+    microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? string.Empty;
+    microsoftOptions.AccessDeniedPath = "/Identity/Account/AccessDeniedSocialLogin";
 });
 builder.Services.ConfigureApplicationCookie(options =>
 {

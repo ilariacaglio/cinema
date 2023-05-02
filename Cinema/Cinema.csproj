@@ -28,6 +28,8 @@
     <PackageReference Include="Stripe.net" Version="41.14.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="7.0.5" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="2.9.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cinema.DataAccess\Cinema.DataAccess.csproj">

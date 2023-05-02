@@ -77,7 +77,7 @@
                 }
                 else
                 {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal text-center">
                         <div>
                             <p>
                                 @foreach (var provider in Model.ExternalLogins!)
@@ -85,6 +85,10 @@
                                     if (provider.Name.Equals("Google"))
                                     {
                                         <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><i class="bi bi-google"></i></button>
+                                    }
+                                    else if (provider.Name.Equals("Microsoft"))
+                                    {
+                                        <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><i class="bi bi-microsoft"></i></button>
                                     }
                                     else
                                     {
