@@ -36,22 +36,6 @@ namespace Cinema.Controllers
             return View(valutazioni);
         }
 
-        //// GET: Valutazione/Details/5
-        //public async Task<IActionResult> Details(int? idFilm)
-        //{
-        //    string userId = await GetCurrentUserId();
-        //    if (idFilm == null || _unitOfWork.Valutazione == null)
-        //        return NotFound();
-        //    var valutazione = _unitOfWork.Valutazione.GetFirstOrDefault(idFilm, userId);
-
-        //    if (valutazione == null)
-        //        return NotFound();
-
-        //    valutazione.IdFilmNavigation = _unitOfWork.Film.GetFirstOrDefault(valutazione.IdFilm);
-        //    valutazione.IdUtenteNavigation = _unitOfWork.Utente.GetFirstOrDefault(valutazione.IdUtente);
-        //    return View(valutazione);
-        //}
-
         //GET
         public async Task<IActionResult> Upsert(int idFilm)
         {
@@ -96,12 +80,6 @@ namespace Cinema.Controllers
             return View(obj);
         }
 
-        //[HttpGet]
-        //public IActionResult GetAll()
-        //{
-        //    var valutazioneList = _unitOfWork.Valutazione.GetAll();
-        //    return Json(new { data = valutazioneList });
-        //}
 
         public async Task<IActionResult> Delete(int? idFilm)
         {

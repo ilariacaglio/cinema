@@ -124,7 +124,14 @@ namespace Cinema.Controllers
                     _unitOfWork.Film.Update(obj);
                     TempData["success"] = "Film modificato con successo";
                 }
-                _unitOfWork.Save();
+                try
+                {
+                    _unitOfWork.Save();
+                }
+                catch (Exception)
+                {
+                    return View(obj);
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(obj);

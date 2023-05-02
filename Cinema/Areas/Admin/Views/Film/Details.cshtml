@@ -64,12 +64,14 @@
             else
             {
                 @foreach (var item in Model.s)
-                    {
+                {
                     <div class="row">
                         <dd class="col-lg-2 my-1">
-                            @{var array =item.Data.ToString().Split("/");
+                            @{var array = item.Data.ToString().Split("/");
                                 string dataItem = array[2] + "-" + array[1] + "-" + array[0];
-                            } 
+                            }
+                            @if (item.Data.ToDateTime(TimeOnly.Parse(DateTime.Now.TimeOfDay.ToString())) >= DateTime.Today)
+                            {
                                 <a href="/User/Prenotazione/Upsert?data=@dataItem&ora=@item.Ora&idSala=@item.IdSala&id=0">
                                     <div class="container cerchio p-1">
                                         <h5 id="text" class="text-center">
@@ -80,6 +82,8 @@
                                         </p>
                                     </div>
                                 </a>
+                            }
+
                         </dd>
                     </div>
                 }
@@ -97,16 +101,19 @@
     #star {
         color: #ffbe0b;
     }
+
     p {
         margin-bottom: 0px;
     }
+
     #text {
         color: #023047 !important;
-        
     }
+
     a {
         text-decoration: none !important;
     }
+
     .cerchio {
         border-radius: 153px;
         background: #ffffff;

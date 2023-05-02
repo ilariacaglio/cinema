@@ -181,11 +181,18 @@ namespace Cinema.Controllers
                         }
                     }
 
-                    //aggiunta della prenotazione
-                    _unitOfWork.Prenotazione.Add(prenot.p);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Prenotazione creata con successo";
-
+                    try
+                    {
+                        //aggiunta della prenotazione
+                        _unitOfWork.Prenotazione.Add(prenot.p);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Prenotazione creata con successo";
+                    }
+                    catch (Exception ex)
+                    {
+                        return View(prenot);
+                    }
+                    
                     //trova id posti
                     List<Posto> postifromdb = new List<Posto>();
                     foreach (var item in numPosti)
@@ -196,7 +203,16 @@ namespace Cinema.Controllers
                     }
 
                     //recupera l'id della prenotazione
-                    var prenotazioneFromDb = _unitOfWork.Prenotazione.GetAll().Where(p => p.DataS == prenot.p.DataS && p.IdSala == prenot.p.IdSala && p.IdUtente == prenot.p.IdUtente && p.OraS == prenot.p.OraS).FirstOrDefault();
+                    var prenotazioniFromDb = _unitOfWork.Prenotazione.GetAll().Where(p => p.DataS == prenot.p.DataS && p.IdSala == prenot.p.IdSala && p.IdUtente == prenot.p.IdUtente && p.OraS == prenot.p.OraS).ToList();
+                    //scegli quella giusta
+                    var prenotazioneFromDb = new Prenotazione();
+                    foreach (var item in prenotazioniFromDb)
+                    {
+                        var a = _unitOfWork.Comprende.GetAll().Where(c => c.IdPrenotazione == item.Id).ToList();
+                        if (a.Count() == 0)
+                            prenotazioneFromDb = item;
+                    }
+
 
                     //scrivi comprende
                     foreach (var item in postifromdb)
@@ -312,15 +328,23 @@ namespace Cinema.Controllers
         public IActionResult Delete(int? id)
         {
             var objFromDbFirst = _unitOfWork.Prenotazione.GetFirstOrDefault(id);
-            if (objFromDbFirst == null)
+            if (objFromDbFirst == null || objFromDbFirst.Pagato)
             {
                 return RedirectToAction(nameof(IndexUtente));
             }
             else
             {
-                _unitOfWork.Prenotazione.Remove(objFromDbFirst);
-                _unitOfWork.Save();
+                try
+                {
+                    _unitOfWork.Prenotazione.Remove(objFromDbFirst);
+                    _unitOfWork.Save();
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction(nameof(IndexUtente));
+                }
                 return RedirectToAction(nameof(IndexUtente));
+
             }
         }
 

@@ -38,7 +38,14 @@ namespace Cinema.DataAccess.Repository
 
         public void Save()
         {
-            _db.SaveChanges();
+            try
+            {
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }
