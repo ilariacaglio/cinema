@@ -7,6 +7,10 @@
     color: black;
 }
 
+.slide {
+    height: inherit !important;
+}
+
 .carousel-control-prev,
 .carousel-control-next {
     background-color: gray;
@@ -18,11 +22,11 @@
 }
 
 img.card-img {
-    width:100% !important;
-    height:100% !important;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: cover !important;
     border: none;
-    border-radius: inherit;
+    border-radius: 5px !important;
 }
 
 #upcoming {
@@ -33,10 +37,12 @@ img.card-img {
 }
 
 .card.card-img {
-    /*    height: 690px !important;
-    width: 432px !important;*/
     border: none !important;
     border-color: none !important;
     display: flex;
-    flex-flow: row nowrap;
+    border-radius:5px !important;
+}
+
+.card-immagine {
+    opacity:1 !important;
 }

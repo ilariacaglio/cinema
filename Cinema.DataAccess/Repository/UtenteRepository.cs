@@ -100,7 +100,9 @@ namespace Cinema.DataAccess.Repository
 
         public Utente? GetFirstOrDefault(string? id)
         {
-            throw new NotImplementedException();
+            if (id is null || id.Equals(String.Empty))
+                return null;
+            return _db.Utenti.Single(u => u.Id == id);
         }
     }
 }

@@ -36,17 +36,17 @@
 
                                     @if ((i * 3) + j < filmUsciti.Count())
                                     {
-                                            @*<div class="card-img">*@
-                                                <a class="card-img" href="/Admin/Film/Details?id=@filmUsciti.ElementAt((i * 3) + j).idFilm">
-                                                    <img src="@filmUsciti.ElementAt((i * 3) + j).Img" height="100%" width="100%" />
-                                                </a>
-                                            @*</div>*@
-                                        }
-
-
+                                        <a class="card-img" href="/Admin/Film/Details?id=@filmUsciti.ElementAt((i * 3) + j).idFilm">
+                                            <img src="@filmUsciti.ElementAt((i * 3) + j).Img" height="100%" width="100%" />
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <div class="card-img card-immagine">
+                                            <img src="/images/placeholder.png" height="100%" width="100%" />
+                                        </div>
+                                    }
                                 </div>
-
-
                             }
                         </div>
                     </div>
@@ -59,25 +59,19 @@
                             {
 
                                 <div class="col-sm-4 col d-flex align-items-stretch">
-                                    <div class="card border border-0" style="border-color:none">
-                                        @if ((i * 3) + j < filmUsciti.Count())
-                                        {
-                                            @*<div class="card-img">*@
-                                                <a class="card-img" href="/Admin/Film/Details?id=@filmUsciti.ElementAt((i * 3) + j).idFilm">
-                                                    <img  src="@filmUsciti.ElementAt((i * 3) + j).Img" height="100%" width="100%" />
-                                                </a>
-                                            @*</div>*@
-
-                                        }
-                                        else
-                                        {
-                                            <div class="card-immagine" style="visibility:hidden">
-                                            </div>
-                                        }
-                                    </div>
+                                    @if ((i * 3) + j < filmUsciti.Count())
+                                    {
+                                        <a class="card-img" href="/Admin/Film/Details?id=@filmUsciti.ElementAt((i * 3) + j).idFilm">
+                                            <img src="@filmUsciti.ElementAt((i * 3) + j).Img" height="100%" width="100%" />
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <div class="card-img card-immagine">
+                                            <img src="/images/placeholder.png" height="100%" width="100%" />
+                                        </div>
+                                    }
                                 </div>
-
-
                             }
                         </div>
                     </div>
