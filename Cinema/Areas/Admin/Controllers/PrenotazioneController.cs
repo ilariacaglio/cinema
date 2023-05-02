@@ -201,12 +201,32 @@ namespace Cinema.Controllers
                     //scrivi comprende
                     foreach (var item in postifromdb)
                     {
-                        _unitOfWork.Comprende.Add(new Comprende()
+                        //verifica che sia disponibile
+                        bool test = true;
+
+                        var a = _unitOfWork.Comprende.GetAll().Where(c => c.IdPosto == item.Id).Select(c => c.IdPrenotazione).ToList();
+
+                        foreach (var obj in a)
                         {
-                            IdPosto = item.Id,
-                            IdPrenotazione = prenotazioneFromDb.Id
-                        });
-                        _unitOfWork.Save();
+                            var p = _unitOfWork.Prenotazione.GetFirstOrDefault(obj);
+                            if (p.DataS == prenotazioneFromDb.DataS
+                                && p.OraS == prenotazioneFromDb.OraS
+                                && p.IdSala == prenotazioneFromDb.IdSala)
+                            {
+                                //posto già prenotato
+                                test = false;
+                            }
+                        }
+
+                        if (test)
+                        {
+                            _unitOfWork.Comprende.Add(new Comprende()
+                            {
+                                IdPosto = item.Id,
+                                IdPrenotazione = prenotazioneFromDb.Id
+                            });
+                            _unitOfWork.Save();
+                        }
                     }
                 }
                 else
@@ -253,12 +273,32 @@ namespace Cinema.Controllers
                         //scrivi comprende
                         foreach (var item in postiToDb)
                         {
-                            _unitOfWork.Comprende.Add(new Comprende()
+                            //verifica che sia disponibile
+                            bool test = true;
+
+                            var a = _unitOfWork.Comprende.GetAll().Where(c => c.IdPosto == item.Id).Select(c => c.IdPrenotazione).ToList();
+
+                            foreach (var obj in a)
                             {
-                                IdPosto = item.Id,
-                                IdPrenotazione = prenot.p.Id
-                            });
-                            _unitOfWork.Save();
+                                var p = _unitOfWork.Prenotazione.GetFirstOrDefault(obj);
+                                if (p.DataS == prenot.p.DataS
+                                    && p.OraS == prenot.p.OraS
+                                    && p.IdSala == prenot.p.IdSala)
+                                {
+                                    //posto già prenotato
+                                    test = false;
+                                }
+                            }
+
+                            if (test)
+                            {
+                                _unitOfWork.Comprende.Add(new Comprende()
+                                {
+                                    IdPosto = item.Id,
+                                    IdPrenotazione = prenot.p.Id
+                                });
+                                _unitOfWork.Save();
+                            }
                         }
                     }
                     return RedirectToAction(nameof(IndexUtente));
