@@ -93,9 +93,15 @@ namespace Cinema.Areas.User.Controllers
                     dettagliPrenotazione = new PrenotazioneDetailsVM()
                 };
 
-                //aggiunta nel carrello
-                _unitOfWork.ShoppingCart.Add(s);
-                _unitOfWork.Save();
+                //verifica che la prenotazione non sia già nel carrello
+                var listaCart = _unitOfWork.ShoppingCart.GetAll().Where(s => s.PrenotazioneId == prenotazioneId && s.UtenteId == s.UtenteId).ToList();
+
+                if (listaCart.Count() == 0)
+                {
+                    //aggiunta nel carrello
+                    _unitOfWork.ShoppingCart.Add(s);
+                    _unitOfWork.Save();
+                }
             }
             
             return RedirectToAction(nameof(Index));

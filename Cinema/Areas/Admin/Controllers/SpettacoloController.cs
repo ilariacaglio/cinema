@@ -103,7 +103,14 @@ namespace Cinema.Controllers
                 }
                 _unitOfWork.Spettacolo.Add(obj.spettacolo);
                 TempData["success"] = "Spettacolo creato con successo";
-                _unitOfWork.Save();
+                try
+                {
+                    _unitOfWork.Save();
+                }
+                catch (Exception ex)
+                {
+                    return View(obj);
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(obj);

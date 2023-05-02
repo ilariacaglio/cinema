@@ -27,47 +27,53 @@ public class HomeController : Controller
         var film = unitOfWork.Film.GetAll().ToList();
         if (film != null) {
             var spettacoli = unitOfWork.Spettacolo.GetAll().ToList();
-            List<HomePageVM> lista = new List<HomePageVM>();
+            //List<HomePageVM> lista = new List<HomePageVM>();
+            HashSet<HomePageVM> lista = new HashSet<HomePageVM>();
             string titolo = null;
             DateOnly data = new DateOnly();
             foreach (var item in film)
             {
                 titolo = item.Titolo;
-                var s = spettacoli.Find(s => s.IdFilm == item.Id);
-                if (s != null)
+                var s = spettacoli.Where(s => s.IdFilm == item.Id);
+                //var s = spettacoli.Find(s => s.IdFilm == item.Id);
+                foreach (var obj in s)
                 {
-                    if (  DateTime.Today.AddDays(-3) <= DateTime.Parse(s.Data.ToString()).Date && DateTime.Today.AddDays(3) >= DateTime.Parse(s.Data.ToString()).Date)
+                    if (obj != null)
                     {
-                        data = s.Data;
-                        lista.Add(new HomePageVM
+                        if (DateTime.Today.AddDays(-3) <= DateTime.Parse(obj.Data.ToString()).Date && DateTime.Today.AddDays(3) >= DateTime.Parse(obj.Data.ToString()).Date)
                         {
-                            Descrizione = item.Descrizione,
-                            idFilm = item.Id,
-                            NomeFilm = titolo,
-                            Data = data,
-                            Img = item.Img,
-                            uscito = true
-                        });
-                    }
-                    else if(DateTime.Today.AddDays(3) <= DateTime.Parse(s.Data.ToString()).Date)
-                    {
-                        data = s.Data;
-                        lista.Add(new HomePageVM
+                            data = obj.Data;
+                            lista.Add(new HomePageVM
+                            {
+                                Descrizione = item.Descrizione,
+                                idFilm = item.Id,
+                                NomeFilm = titolo,
+                                Data = data,
+                                Img = item.Img,
+                                uscito = true
+                            });
+                            break;
+                        }
+                        else if (DateTime.Today.AddDays(3) <= DateTime.Parse(obj.Data.ToString()).Date)
                         {
-                            Descrizione = item.Descrizione,
-                            idFilm = item.Id,
-                            NomeFilm = titolo,
-                            Data = data,
-                            Img = item.Img,
-                            uscito = false
-                        });
+                            data = obj.Data;
+                            lista.Add(new HomePageVM
+                            {
+                                Descrizione = item.Descrizione,
+                                idFilm = item.Id,
+                                NomeFilm = titolo,
+                                Data = data,
+                                Img = item.Img,
+                                uscito = false
+                            });
+                            break;
+                        }
                     }
                 }
             }
-
-            return View(lista);
+            List<HomePageVM> homes = new List<HomePageVM>(lista);
+            return View(homes);
         }
-
         return NotFound();
     }
 
