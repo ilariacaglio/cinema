@@ -92,7 +92,7 @@ namespace Cinema.Areas.Admin.Controllers
             List<Prenotazione> listaP = new List<Prenotazione>();
             foreach (var item in spettacoli)
             {
-                var prenotazioni = _unitOfWork.Prenotazione.GetAll().Where(p => p.DataS == item.Data && p.OraS == item.Ora && p.IdSala == item.IdSala).ToList();
+                var prenotazioni = _unitOfWork.Prenotazione.GetAll().Where(p => p.DataS == item.Data && p.OraS == item.Ora && p.IdSala == item.IdSala && p.Pagato).ToList();
                 foreach (var obj in prenotazioni)
                 {
                     obj.Spettacolo = item;
